@@ -5,3 +5,19 @@
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.button{transition:none}.button:hover{transform:none;box-shadow:none}.hero-art{transform:none}}
 
 textarea{width:100%;border:2px solid var(--ink);border-radius:0;background:var(--surface);color:var(--ink);min-height:84px;padding:.55rem .7rem;resize:vertical}textarea:focus{outline:3px solid var(--gold);outline-offset:2px}textarea:disabled{opacity:.72;background:transparent;cursor:not-allowed}.pro-note{margin-top:1.3rem}.pro-note label{margin-bottom:.35rem}.pro-tag{font-family:ui-sans-serif,sans-serif;font-size:11px;letter-spacing:.08em;color:var(--rust);border:1px solid currentColor;padding:.15rem .25rem}
+
+/* Release hardening: visible focus, touch targets, and an actually hidden update notice. */
+#files:focus-visible + .file-picker{outline:3px solid var(--gold);outline-offset:3px;background:rgba(0,111,112,.11)}
+.import-button:focus-within{outline:3px solid var(--gold);outline-offset:3px}
+input:not([type]),input[type=text],select{min-height:46px}
+.site-header nav{gap:.5rem}
+.site-header nav a,footer a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding-inline:.4rem}
+.record-check{display:flex;align-items:center;justify-content:flex-end;gap:.55rem;min-height:44px;margin:0;cursor:pointer}
+.record-check input{width:20px;height:20px;accent-color:var(--teal);flex:none}
+.compatibility-note{max-width:790px;margin:1rem 0 0;padding:.8rem 1rem;border-left:4px solid var(--gold);background:rgba(177,107,0,.1);font-size:15px}
+#kit[hidden] + .compatibility-note{display:none}
+.update-toast[hidden]{display:none}
+.update-toast{background:#1d292d;color:#f8f1e2;max-width:calc(100vw - 2rem)}
+.update-toast .button,.update-toast .button:hover{min-height:44px;border-color:#72d3c8;color:#f8f1e2;background:#1d292d;box-shadow:none}
+@media(max-width:720px){.site-header nav{gap:0}.site-header nav a{font-size:13px}.record-check{justify-content:flex-start}footer a{margin-block:.15rem}}
+.brand{min-height:44px}
