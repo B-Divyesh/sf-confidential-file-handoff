@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title>Confidential File Handoff icon</title>
+  <rect width="512" height="512" rx="96" fill="#f5f0e3"/>
+  <path d="M92 132h328v245H92z" fill="#006f70"/>
+  <path d="m92 145 164 124 164-124" fill="none" stroke="#f5f0e3" stroke-width="26" stroke-linejoin="round"/>
+  <circle cx="256" cy="266" r="56" fill="#b64026"/>
+  <path d="M235 264v-19a21 21 0 0 1 42 0v19m-45 0h48v41h-48z" fill="none" stroke="#f5f0e3" stroke-width="14" stroke-linejoin="round"/>
+  <path d="M74 390h364" stroke="#b64026" stroke-width="20" stroke-dasharray="12 17"/>
+</svg>
