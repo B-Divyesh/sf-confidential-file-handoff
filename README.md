@@ -6,7 +6,7 @@ Live: https://confidential-file-handoff.sociobot.in
 
 ## What it does
 
-- Creates an AES-protected `confidential-handoff.zip` on the sender’s device; the app does not upload selected files or the ZIP password.
+- Creates an AES-256-protected `confidential-handoff.zip` on the sender’s device; the app does not upload selected files or the ZIP password.
 - Produces a recipient sheet that explicitly separates the ZIP delivery route from the password route.
 - Keeps an IndexedDB checklist with only recipient name, dates, and the selected routes—not file names, file contents, or passwords.
 - Lets the sender export/import that checklist as JSON.
@@ -14,22 +14,35 @@ Live: https://confidential-file-handoff.sociobot.in
 
 This is a handoff aid, not identity verification, a secure transfer service, malware scanning, or medical/legal/compliance certification. Read the in-app threat model before using it for an important exchange.
 
+ZIP entry names are visible without the password, and some built-in ZIP tools do not support AES-256. Rename sensitive filenames before adding them. The generated recipient sheet recommends compatible extractors and a recovery path.
+
 ## Develop and verify
 
 Requires Node 20+.
 
 ```sh
-npm install
+npm ci
 npm run dev
 npm test
+npm run lint
+npm run typecheck
 npm run build
+npm run test:browser
 ```
 
 `npm run build` writes the static deployable site to `dist/`, with `dist/index.html` at its root.
 
 ## Privacy and paid unlock
 
-See [/privacy/](/privacy/) and [/terms/](/terms/). The free core workflow is complete. A one-time Pro license, sold by Sociobot/Dodo, unlocks a personal note on the recipient sheet; the product uses the Sociobot license endpoint and never embeds a payment provider.
+See [/privacy/](/privacy/) and [/terms/](/terms/). The free core workflow is complete. A US $9 one-time Pro license, sold by Sociobot/Dodo, unlocks a personal note on the recipient sheet; the product never embeds a payment provider. License checks use the same-origin `/api/license/verify` managed function, which forwards to Sociobot, limits each client to 20 checks per minute, and does not cache responses. Browser verdicts are reused for at most one day.
+
+## Deploy
+
+This remains an Azure Static Web Apps deployment. `dist/` is the static root and `api/` is the managed same-origin license gateway. The factory deployment command is:
+
+```sh
+/opt/fleet/lib/deploy-static.sh confidential-file-handoff dist
+```
 
 ## Design and source artwork
 

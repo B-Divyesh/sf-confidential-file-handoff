@@ -1,0 +1,45 @@
+{
+  "product_slug": "confidential-file-handoff",
+  "artifact_class": "pwa-offline",
+  "status": "recovered from the shipped product contract and independent verification after the original brief file was absent",
+  "opportunity": {
+    "audience": "People who need to send sensitive tax, medical, legal, identity, or credential files to a recipient who may not be technically confident.",
+    "job_to_be_done": "Create a password-protected handoff locally, explain the two-channel delivery procedure clearly, and remember only whether the recipient opened it.",
+    "problem": "Generic file sharing leaves senders to improvise encryption, password separation, recipient instructions, and follow-up. That creates avoidable mistakes and support burden."
+  },
+  "scope": {
+    "free": [
+      "Create an AES-256 encrypted ZIP entirely in the browser",
+      "Generate, download, and print a plain-language recipient sheet",
+      "Record sent and opened acknowledgements in a local IndexedDB log",
+      "Export and strictly validated import of the local log",
+      "Installable offline PWA behavior"
+    ],
+    "paid": {
+      "name": "Pro",
+      "price": "US $9 one time",
+      "feature": "Add a short personal note to the recipient sheet",
+      "provider": "Sociobot billing API with Dodo as merchant of record"
+    },
+    "out_of_scope": [
+      "Uploading or transferring files",
+      "Identity verification",
+      "Malware scanning",
+      "Regulatory or compliance certification",
+      "Hiding ZIP entry names"
+    ]
+  },
+  "privacy": {
+    "default": "Files, ZIP passwords, recipient sheets, and ZIPs stay on the device.",
+    "stored_fields": ["id", "recipient", "createdAt", "delivery", "passwordChannel", "sentAt", "acknowledgedAt"],
+    "network": "Core use makes no off-origin request. License verification is user-triggered and goes through a rate-limited same-origin gateway to the Sociobot API."
+  },
+  "acceptance": [
+    "The recipient can decrypt every selected file with the supplied password and receives compatible-extractor guidance.",
+    "Wrong passwords fail and duplicate source file names do not abort creation.",
+    "A sender can update sent/opened state after reload or returning later.",
+    "Storage failure never withholds an already-created ZIP or sheet.",
+    "Offline installed use, legal routes, and service-worker updates remain recoverable.",
+    "Desktop, keyboard, screen-reader semantics, and 390px mobile meet the factory accessibility baseline."
+  ]
+}

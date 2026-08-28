@@ -27,6 +27,8 @@ There are no floating dashboard cards: steps sit on an open paper sheet, marked 
 
 Motion is functional only: the progress meter fills in 180ms and the handoff kit appears with a 180ms opacity/translate transition. Under `prefers-reduced-motion`, states change instantly. No looping animation or flashing is used.
 
+The update notice uses fixed night-ink and warm-paper colors in both system themes so it reads as an operational layer, not page decoration. Its visibility is controlled by the native `hidden` state and it appears only when a newly activated content-versioned worker has claimed an existing page. Persisted acknowledgement controls remain in the open log row rather than becoming separate cards, preserving the printed-checklist interaction grammar.
+
 ## Original asset plan and provenance
 
 One original hero illustration, `assets/src/print-desk.png`, depicts a closed document packet, a key card, and a phone as simplified editorial objects on stippled paper. It is decorative (`alt=""`) because the adjacent copy states the procedure. Prompt sheet: **subject** a confidential document handoff desk; **world/materials** two-colour risograph security print, heavy halftone dots and grainy recycled paper; **light** flat studio print lighting; **lens** straight-on editorial still life; **palette** warm ivory, deep blue-green, rust vermilion, restrained mustard; **negative list** readable text, watermark, logos, brands, people, medical/legal symbols, photorealism. Generated with the factory Azure image model on 2026-08-28; original product artwork, no third-party licence needed. The reviewed final is converted to WebP for delivery; source prompt is retained alongside it.
