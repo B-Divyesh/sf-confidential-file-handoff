@@ -96,7 +96,7 @@ test('@regression:managed-function-runtime keeps the Azure Table dependency Node
   // the function fail during module loading and returned an empty HTTP 500.
   const lock = JSON.parse(readFileSync(resolve(process.cwd(), 'api', 'package-lock.json'), 'utf8'));
   const runtimePackages = Object.entries(lock.packages)
-    .filter(([path]) => path.includes('node_modules/@azure/data-tables'));
+    .filter(([path]) => path.startsWith('node_modules/@azure/') || path.startsWith('node_modules/@typespec/'));
   assert.ok(runtimePackages.length > 1, 'the API lock must pin the table client and its runtime dependencies');
   for (const [path, manifest] of runtimePackages) {
     const range = manifest.engines?.node || '';
