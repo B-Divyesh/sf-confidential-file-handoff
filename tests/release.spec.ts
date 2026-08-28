@@ -235,7 +235,7 @@ test('installed app serves the real privacy page offline and precaches hashed as
   await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
   const worker = await (await page.request.get('/sw.js')).text();
   expect(worker).toMatch(/confidential-handoff-[a-f0-9]{16}/);
-  expect(worker).toMatch(/\/assets\/index-[A-Za-z0-9_-]+\.js/);
+  expect(worker).toMatch(/\/assets\/[A-Za-z0-9_-]+\.js/);
   await context.setOffline(true);
   await page.goto('/privacy/');
   await expect(page.getByRole('heading', { level: 1, name: 'Privacy' })).toBeVisible();

@@ -43,7 +43,7 @@ The claim tests prove a resettable isolated demo, an AES ZIP that decrypts with 
 
 `/opt/fleet/lib/verify-url.sh http://127.0.0.1:4173 .factory/evidence/repair-2` passed: 653 ms load; no console errors; title, `lang=en`, one h1, main landmark, and image alt checks all pass. Screenshots and `verify.json` are in `.factory/evidence/repair-2/`.
 
-Production assets are 165,955 B JS (70,450 B gzip), 13,134 B CSS (3,810 B gzip), and 154,836 B hero image. The separate axe CLI could not launch Chrome in this container; Playwright’s pinned Chromium axe integration ran successfully in the browser suite. Two Lighthouse 13 attempts could not connect to the container Chromium; the prior independent live mobile result was 96 Performance / 100 Accessibility / 100 Best Practices / 100 SEO. No performance claims were added or changed.
+Production assets are 165,955 B JS (70,450 B gzip), 13,134 B CSS (3,810 B gzip), and 154,836 B hero image. The separate axe CLI could not launch Chrome in this container; Playwright’s pinned Chromium axe integration ran successfully in the browser suite. Two Lighthouse 13 attempts could not connect to the container Chromium; the prior independent live mobile result was 96 Performance / 100 Accessibility / 100 Best Practices / 100 SEO. No performance claims were added or changed. `/demo` is a real Vite page and unknown static routes use the designed 404 response.
 
 ## Deploy and post-deploy
 
