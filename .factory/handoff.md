@@ -1,8 +1,8 @@
-# Repair handoff — Confidential File Handoff polish 1
+# Review 2 handoff — Confidential File Handoff
 
 ## Status
 
-All cumulative review findings are implemented, deployed, and verified from a cold live browser. Nothing is deferred.
+Independent review completed. No product code was modified. The review verdict is **FAIL**: two blocking claims-contract findings and two minor consistency/copy findings remain.
 
 ## What changed
 
@@ -66,4 +66,9 @@ npm run test:browser
 
 ## Known gaps and next steps
 
-None. Every blocking and minor finding in `.factory/review-1.md` is closed and verified on the deployed origin.
+See `.factory/review-2.md` for complete evidence and the copy inventory. The next repair must:
+
+1. Register and observe-test ZIP entry-name visibility and recipient compatibility guidance.
+2. Make the AES-256 claim test assert encryption, failure with a wrong password, and the encryption method/strength.
+3. Use identical header navigation on every route.
+4. Replace reader-facing README implementation jargon with plain language or move it to developer documentation.
