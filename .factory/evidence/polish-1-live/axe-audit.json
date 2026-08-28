@@ -1,0 +1,37 @@
+[
+  {
+    "path": "/",
+    "status": 200,
+    "title": "Confidential File Handoff — create a protected ZIP",
+    "violations": 0,
+    "seriousOrCritical": 0
+  },
+  {
+    "path": "/?demo=1",
+    "status": 200,
+    "title": "Demo — Confidential File Handoff",
+    "violations": 0,
+    "seriousOrCritical": 0
+  },
+  {
+    "path": "/privacy/",
+    "status": 200,
+    "title": "Privacy — Confidential File Handoff",
+    "violations": 0,
+    "seriousOrCritical": 0
+  },
+  {
+    "path": "/terms/",
+    "status": 200,
+    "title": "Terms — Confidential File Handoff",
+    "violations": 0,
+    "seriousOrCritical": 0
+  },
+  {
+    "path": "/not-a-real-route-polish-1",
+    "status": 404,
+    "title": "Page not found — Confidential File Handoff",
+    "violations": 0,
+    "seriousOrCritical": 0
+  }
+]

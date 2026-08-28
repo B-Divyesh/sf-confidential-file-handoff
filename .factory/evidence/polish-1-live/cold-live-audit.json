@@ -1,0 +1,52 @@
+{
+  "origin": "https://confidential-file-handoff.sociobot.in",
+  "viewport": "390x844",
+  "sampleActionBox": {
+    "x": 41.390625,
+    "y": 683.359375,
+    "width": 312.21875,
+    "height": 49.53125
+  },
+  "databaseNames": [
+    "confidential-file-handoff",
+    "demo:confidential-file-handoff"
+  ],
+  "consoleErrors": [],
+  "offOriginRequests": [],
+  "assertions": [
+    "root title",
+    "plain first-screen job wording",
+    "one-click query demo",
+    "demo banner",
+    "sample project-update.txt",
+    "sample meeting-notes.txt",
+    "sample Maya",
+    "sample Email attachment",
+    "sample Text message",
+    "action inside mobile first viewport",
+    "sample handoff created",
+    "sheet confidential-file-handoff.zip",
+    "sheet Email attachment",
+    "sheet Text message",
+    "sheet omits access phrase",
+    "reset clears demo log",
+    "exit discards demo activity",
+    "separate database namespaces",
+    "/privacy/ 200",
+    "/privacy/ title",
+    "/privacy/ one h1",
+    "/privacy/ canonical",
+    "/terms/ 200",
+    "/terms/ title",
+    "/terms/ one h1",
+    "/terms/ canonical",
+    "route navigation focus",
+    "back navigation focus",
+    "no console/page errors on product routes",
+    "no off-origin core requests",
+    "unknown route 404",
+    "404 title",
+    "404 recovery"
+  ],
+  "assertionCount": 33
+}

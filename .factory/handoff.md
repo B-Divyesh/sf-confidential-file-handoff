@@ -2,7 +2,7 @@
 
 ## Status
 
-All cumulative review findings are implemented and pass local verification. Deployment and cold live verification are the remaining work-order steps.
+All cumulative review findings are implemented, deployed, and verified from a cold live browser. Nothing is deferred.
 
 ## What changed
 
@@ -29,6 +29,30 @@ All cumulative review findings are implemented and pass local verification. Depl
 
 Evidence is under `.factory/evidence/polish-1-local/` and in the two `polish-1-local-*-mobile.png` screenshots.
 
+## Clean-clone verification
+
+A fresh clone at candidate commit `882d179cbde82af9613e694afda159ba773a05ef` passed:
+
+- All 22 commands in `.factory/claims.json`, run independently: 22/22.
+- `npm test`: 4 Vitest and 9 gateway tests.
+- `npm run lint` and `npm run typecheck`.
+- `npm run build`: generated `dist/`.
+- `npm run test:browser`: 32/32.
+
+## Deployment and live verification
+
+- Live URL: `https://confidential-file-handoff.sociobot.in`.
+- Deployed repair commit: `882d179cbde82af9613e694afda159ba773a05ef`.
+- Azure Static Web Apps deployment ID: `4e020d35-3576-4d58-908d-4d60177327a5`.
+- `verify-url.sh` passes Root, Demo, Privacy, and Terms with exact titles, one h1, a main landmark, labels, alt text, and no console errors.
+- Cold 390×844 audit: 33/33 checks pass. It covers the one-click demo, isolated namespaces, sample creation, sheet contents, reset, exit, route metadata, focus, 404, privacy, and mobile placement.
+- Live offline audit: the service worker controls `/?demo=1`; reload and sample creation work with the browser offline.
+- Live axe audit: zero violations on Root, Demo, Privacy, Terms, and 404.
+- Live link crawl: every rendered link resolves; checkout reaches the Dodo-hosted page with status 200; no dead Param Factory link remains.
+- Live Lighthouse mobile: 99 performance, 100 accessibility, 100 best practices, 100 SEO; LCP 2.0 s, CLS 0, TBT 0 ms.
+
+Live evidence is under `.factory/evidence/polish-1-live/`, including mobile screenshots and machine-readable audit JSON.
+
 ## Run
 
 ```sh
@@ -40,6 +64,6 @@ npm run build
 npm run test:browser
 ```
 
-## Remaining
+## Known gaps and next steps
 
-Deploy through `/opt/fleet/lib/deploy-static.sh confidential-file-handoff dist`, then cold-check every route and finding on the live origin.
+None. Every blocking and minor finding in `.factory/review-1.md` is closed and verified on the deployed origin.

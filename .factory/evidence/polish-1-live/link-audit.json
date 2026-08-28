@@ -1,0 +1,50 @@
+{
+  "links": [
+    {
+      "url": "https://confidential-file-handoff.sociobot.in/#main",
+      "status": 200,
+      "finalUrl": "https://confidential-file-handoff.sociobot.in/#main"
+    },
+    {
+      "url": "https://confidential-file-handoff.sociobot.in/",
+      "status": 200,
+      "finalUrl": "https://confidential-file-handoff.sociobot.in/"
+    },
+    {
+      "url": "https://confidential-file-handoff.sociobot.in/?demo=1",
+      "status": 200,
+      "finalUrl": "https://confidential-file-handoff.sociobot.in/?demo=1"
+    },
+    {
+      "url": "https://confidential-file-handoff.sociobot.in/#how-it-works",
+      "status": 200,
+      "finalUrl": "https://confidential-file-handoff.sociobot.in/#how-it-works"
+    },
+    {
+      "url": "https://confidential-file-handoff.sociobot.in/#records",
+      "status": 200,
+      "finalUrl": "https://confidential-file-handoff.sociobot.in/#records"
+    },
+    {
+      "url": "https://confidential-file-handoff.sociobot.in/privacy/",
+      "status": 200,
+      "finalUrl": "https://confidential-file-handoff.sociobot.in/privacy/"
+    },
+    {
+      "url": "https://confidential-file-handoff.sociobot.in/#builder",
+      "status": 200,
+      "finalUrl": "https://confidential-file-handoff.sociobot.in/#builder"
+    },
+    {
+      "url": "https://api.sociobot.in/api/v1/products/confidential-file-handoff/checkout",
+      "status": 200,
+      "finalUrl": "https://checkout.dodopayments.com/session/cks_0NmP3R7VIHHYL8Ds8Gy5a"
+    },
+    {
+      "url": "https://confidential-file-handoff.sociobot.in/terms/",
+      "status": 200,
+      "finalUrl": "https://confidential-file-handoff.sociobot.in/terms/"
+    }
+  ],
+  "paramFactoryLinks": []
+}
