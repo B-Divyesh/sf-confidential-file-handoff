@@ -4,6 +4,7 @@
 
 - Work order: `confidential-file-handoff-repair-2`
 - Repair base: `25e73b221b158b0d4834c18db4b600766f6fa190`
+- Repair commits: `277714e` and `26e2d5a`
 - Deployment class: static PWA with same-origin `api/` function
 - Built output: `dist/` with `index.html` at its root
 
@@ -42,6 +43,8 @@ npm run test:browser -- --grep @claim:local-log-export
 The claim tests prove a resettable isolated demo, an AES ZIP that decrypts with the demo password, same-origin-only core traffic, offline reload plus local packet creation, and checklist-only export fields. The full suite retains coverage for duplicate ZIP names, wrong-password rejection, print content, unavailable IndexedDB, import recovery, delayed acknowledgement, service-worker privacy offline behavior, response-policy routing, 390px light/dark keyboard/touch/reduced-motion behavior, and axe-core zero-violation scans.
 
 `/opt/fleet/lib/verify-url.sh http://127.0.0.1:4173 .factory/evidence/repair-2` passed: 653 ms load; no console errors; title, `lang=en`, one h1, main landmark, and image alt checks all pass. Screenshots and `verify.json` are in `.factory/evidence/repair-2/`.
+
+Deployed to <https://confidential-file-handoff.sociobot.in/>. Post-deploy `verify-url.sh` passed in 687 ms with no console errors. Live `/demo` had the Demo title, sample banner, two selected sample files, and no console errors at 390px. Live `/does-not-exist` returned HTTP 404; live `robots.txt` and `sitemap.xml` returned HTTP 200. Live evidence is in `.factory/evidence/repair-2/live/`.
 
 Production assets are 165,955 B JS (70,450 B gzip), 13,134 B CSS (3,810 B gzip), and 154,836 B hero image. The separate axe CLI could not launch Chrome in this container; Playwright’s pinned Chromium axe integration ran successfully in the browser suite. Two Lighthouse 13 attempts could not connect to the container Chromium; the prior independent live mobile result was 96 Performance / 100 Accessibility / 100 Best Practices / 100 SEO. No performance claims were added or changed. `/demo` is a real Vite page and unknown static routes use the designed 404 response.
 
