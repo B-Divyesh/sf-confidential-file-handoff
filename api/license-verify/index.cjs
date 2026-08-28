@@ -50,7 +50,9 @@ class AzureTableRateLimiter {
     if (now - this.lastCleanup < WINDOW_MS) return;
     this.lastCleanup = now;
     const expired = [];
-    const entities = this.client.listEntities({ queryOptions: { filter: `PartitionKey eq '${PARTITION_KEY}' and resetAt lt ${now}` } });
+    // Azure Tables parses 13-digit epoch values as Int64 only when the OData
+    // literal carries the suffix; without it cleanup makes every request fail.
+    const entities = this.client.listEntities({ queryOptions: { filter: `PartitionKey eq '${PARTITION_KEY}' and resetAt lt ${now}L` } });
     for await (const entity of entities) { expired.push(entity); if (expired.length >= 100) break; }
     await Promise.all(expired.map((entity) => this.client.deleteEntity(PARTITION_KEY, entity.rowKey, { etag: entity.etag }).catch(() => undefined)));
   }
