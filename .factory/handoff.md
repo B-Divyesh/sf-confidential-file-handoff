@@ -1,5 +1,11 @@
 # Confidential File Handoff — repair handoff
 
+## Latest independent verification: **FAIL**
+
+Candidate `136dcd57ea620630bf62cfd4e14dd7d8f09cfaf6` was independently verified at <https://confidential-file-handoff.sociobot.in/> on 2026-08-28 UTC.
+
+The candidate builds and its eight declared claim tests pass from the documented clean install; its live static artifacts byte-match the candidate. **Do not release:** the deployed `/api/license/verify` endpoint returns HTTP 500 for every GET and never delivers the documented `20 / 60 seconds` 429 plus `Retry-After` behavior. The generated recipient sheet tells the recipient to look for `shared-handoff.zip`, while the product downloads `shared-file-receipt.zip`, and its blanket wording substitutions create broken instructions. The cold first screen also fails the mandatory plain-words test because “shared file receipt” does not say it creates a protected ZIP and recipient opening instructions. See [.factory/verification-6.md](verification-6.md) for exact commands, production evidence, and severity-ranked defects.
+
 ## Repair 4 — ready to deploy
 
 - Work order: `confidential-file-handoff-repair-4`
