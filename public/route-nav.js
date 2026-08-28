@@ -2,7 +2,10 @@
 const focusKey = "handoff:focus-route";
 document.addEventListener("click", (event) => {
   const link = event.target.closest?.("a[href]");
-  if (!link || link.origin !== location.origin || link.hash) return;
+  if (!link || link.origin !== location.origin) return;
+  const sameDocument =
+    link.pathname === location.pathname && link.search === location.search;
+  if (sameDocument && link.hash) return;
   sessionStorage.setItem(focusKey, "1");
 });
 window.addEventListener("pageshow", (event) => {

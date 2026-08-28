@@ -63,10 +63,10 @@ app.innerHTML = `
 
     <section id="kit" class="handoff-kit" hidden aria-labelledby="kit-title" tabindex="-1"><div class="kit-stamp" aria-hidden="true">READY<br>TO HAND OFF</div><p class="eyebrow">Your packet is prepared</p><h2 id="kit-title">Send these two things separately.</h2><div class="kit-grid"><article><p class="kit-number">A</p><h3>Encrypted ZIP</h3><p>Send this file using your selected delivery route. It requires the password to open.</p><button class="button button-primary" id="download-zip" type="button">Download encrypted ZIP</button></article><article><p class="kit-number">B</p><h3>Recipient handoff sheet</h3><p>Send or print this with the ZIP. It tells <span id="kit-recipient">your recipient</span where to expect the password.</p><button class="button button-secondary" id="download-sheet" type="button">Download handoff sheet</button><button class="link-button" id="print-sheet" type="button">Print the sheet</button></article></div><div class="acknowledgement"><h3>Manual acknowledgement</h3><p>Keep only the facts you need—never the files, password, or file names.</p><label class="checkline"><input id="sent-check" type="checkbox"><span>I sent the encrypted ZIP and handoff sheet.</span></label><label class="checkline"><input id="ack-check" type="checkbox"><span>The recipient confirmed they opened the files.</span></label></div><button class="link-button" id="start-again" type="button">Prepare another handoff</button></section>
 
-    <p class="compatibility-note">Recipient note: some built-in ZIP tools do not support AES-256. The handoff sheet names compatible extractors and tells the recipient what to do if opening fails.</p>
+    <p class="compatibility-note">If a built-in ZIP tool cannot open it, the handoff sheet names three compatible extractors and a reporting step.</p>
     <section class="records" id="records" aria-labelledby="records-title"><div class="section-intro"><p class="eyebrow">Local handoff log</p><h2 id="records-title">Review the local handoff log</h2><p>This browser keeps only the recipient, dates, and delivery routes. It does not keep files, file names, or access phrases.</p></div><div class="record-actions"><button class="button button-secondary" id="export-records" type="button">Export handoff log</button><label class="button button-secondary import-button">Import handoff log<input id="import-records" type="file" accept="application/json"></label></div><div id="record-list" aria-live="polite"></div></section>
 
-    <section class="plain-truth" id="privacy-note" aria-labelledby="truth-title"><p class="eyebrow">Limits</p><h2 id="truth-title">What the protected ZIP does and does not protect</h2><div><p><strong>It protects file contents:</strong> someone needs the separate access phrase to read them.</p><p><strong>It does not hide file names:</strong> ZIP entry names remain readable. Rename files first if their names reveal sensitive information.</p><p><strong>It has limits:</strong> It cannot verify your recipient or secure a compromised device. It cannot stop forwarding, scan for malware, or guarantee a delivery channel.</p></div><p>For urgent or regulated needs, follow your professional or organisation’s requirements. This tool makes no medical, legal, or compliance guarantee.</p></section>
+    <section class="plain-truth" id="privacy-note" aria-labelledby="truth-title"><p class="eyebrow">Limits</p><h2 id="truth-title">What the protected ZIP does and does not protect</h2><div><p><strong>It protects file contents:</strong> someone needs the separate access phrase to read them.</p><p><strong>It does not hide file names:</strong> ZIP entry names remain readable. Rename files first if their names reveal sensitive information.</p><p><strong>It does not verify recipients:</strong> you enter the name and choose both routes yourself.</p></div><p>For urgent or regulated needs, follow your professional or organisation’s requirements. This tool does not replace those requirements.</p></section>
 
     <section class="pro" aria-labelledby="pro-title"><div><p class="eyebrow">One-time Pro purchase</p><h2 id="pro-title">Add a personal note to the handoff sheet.</h2><p>Pro costs US $9 once and adds a personal note. Creating the ZIP, handoff sheet, handoff log, and exports remains free.</p></div><div id="license-panel"><a class="button button-primary" href="https://api.sociobot.in/api/v1/products/confidential-file-handoff/checkout">Buy Pro once — US $9</a><label for="license-input">Already bought it? Paste your license</label><div class="license-row"><input id="license-input" type="text" autocomplete="off" aria-describedby="license-status"><button id="restore-license" class="button button-secondary" type="button">Restore Pro license</button></div><p id="license-status" class="microcopy" aria-live="polite"></p></div></section>
   </main>
@@ -97,9 +97,9 @@ document.querySelector("#truth-title")!.textContent =
   "What the protected ZIP does and does not protect";
 document.querySelector(".plain-truth > .eyebrow")!.textContent = "Limits";
 document.querySelector(".plain-truth > div")!.innerHTML =
-  "<p><strong>It protects file contents:</strong> someone needs the separate access phrase to read them.</p><p><strong>It does not hide file names:</strong> ZIP entry names remain readable. Rename files first if their names reveal sensitive information.</p><p><strong>It has limits:</strong> It cannot verify your recipient or secure a compromised device. It cannot stop forwarding, scan for malware, or guarantee a delivery channel.</p>";
+  "<p><strong>It protects file contents:</strong> someone needs the separate access phrase to read them.</p><p><strong>It does not hide file names:</strong> ZIP entry names remain readable. Rename files first if their names reveal sensitive information.</p><p><strong>It does not verify recipients:</strong> you enter the name and choose both routes yourself.</p>";
 document.querySelector(".plain-truth > p:last-child")!.textContent =
-  "For urgent or regulated needs, follow your professional or organisation’s requirements. This tool makes no medical, legal, or compliance guarantee.";
+  "For urgent or regulated needs, follow your professional or organisation’s requirements. This tool does not replace those requirements.";
 document.querySelector(".pro > div:first-child > .eyebrow")!.textContent =
   "One-time Pro purchase";
 document.querySelector(".pro > div:first-child > p:last-child")!.textContent =
@@ -139,7 +139,10 @@ function focusRouteHeading() {
 
 document.addEventListener("click", (event) => {
   const link = (event.target as Element).closest<HTMLAnchorElement>("a[href]");
-  if (!link || link.origin !== location.origin || link.hash) return;
+  if (!link || link.origin !== location.origin) return;
+  const sameDocument =
+    link.pathname === location.pathname && link.search === location.search;
+  if (sameDocument && link.hash) return;
   sessionStorage.setItem("handoff:focus-route", "1");
 });
 window.addEventListener("pageshow", (event) => {

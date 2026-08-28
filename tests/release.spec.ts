@@ -398,10 +398,86 @@ test("@claim:encrypted-local-zip demo creates a decryptable AES-256 ZIP", async 
   );
   const entries = await reader.getEntries();
   expect(entries).toHaveLength(2);
+  for (const entry of entries) {
+    expect(entry.encrypted).toBe(true);
+    expect(entry.zipCrypto).toBe(false);
+    expect(entry.extraFieldAES?.strength).toBe(3);
+  }
+  await expect(entries[0].getData!(new BlobWriter())).rejects.toThrow();
+  await expect(
+    entries[0].getData!(new BlobWriter(), { password: "wrong-password" }),
+  ).rejects.toThrow();
   await expect(
     entries[0].getData!(new BlobWriter(), { password: "sample-password-2026" }),
   ).resolves.toBeInstanceOf(Blob);
   await reader.close();
+});
+
+test("@claim:zip-entry-names-visible protected ZIP names can be listed without the access phrase", async ({
+  page,
+}) => {
+  await page.goto("/?demo=1");
+  const downloadPromise = page.waitForEvent("download");
+  await page.locator("#create-demo").click();
+  await page.locator("#download-zip").click();
+  const download = await downloadPromise;
+  const reader = new ZipReader(
+    new BlobReader(
+      new Blob([await readFile((await download.path()) as string)]),
+    ),
+  );
+  const entries = await reader.getEntries();
+  expect(entries.map(({ filename }) => filename)).toEqual([
+    "project-update.txt",
+    "meeting-notes.txt",
+  ]);
+  expect(entries.every(({ encrypted }) => encrypted)).toBe(true);
+  await reader.close();
+});
+
+test("@claim:handoff-sheet-compatibility sheet gives exact extractor and failure guidance", async ({
+  page,
+}) => {
+  await page.goto("/?demo=1");
+  await page.locator("#create-demo").click();
+  const downloadPromise = page.waitForEvent("download");
+  await page.locator("#download-sheet").click();
+  const sheet = await readFile(
+    (await (await downloadPromise).path()) as string,
+    "utf8",
+  );
+  expect(sheet).toContain("7-Zip (Windows)");
+  expect(sheet).toContain("Keka (macOS)");
+  expect(sheet).toContain("PeaZip (Windows, macOS, or Linux)");
+  expect(sheet).toContain(
+    "tell your sender what device and app you are using",
+  );
+});
+
+test("@claim:no-recipient-verification creates a handoff without an identity check", async ({
+  page,
+}) => {
+  const requests: string[] = [];
+  page.on("request", (request) => requests.push(request.url()));
+  await page.goto("/");
+  await page.locator("#files").setInputFiles({
+    name: "example.txt",
+    mimeType: "text/plain",
+    buffer: Buffer.from("example"),
+  });
+  await page.locator("#recipient").fill("Unverified recipient");
+  await page.locator("#password").fill("correct horse battery staple");
+  await page.locator("#password-saved").check();
+  await expect(
+    page.locator(
+      'input[type="email"], input[type="tel"], input[name*="identity" i]',
+    ),
+  ).toHaveCount(0);
+  await page.locator("#prepare").click();
+  await expect(page.locator("#kit")).toBeVisible();
+  expect(requests.some((url) => /identity|recipient.*verify/i.test(url))).toBe(
+    false,
+  );
 });
 
 test("@claim:offline-after-first-visit demo reloads and creates a packet offline", async ({
@@ -741,6 +817,7 @@ test("@claim:artwork-provenance the shipped artwork has its original prompt reco
 test("routes have exact titles, complete metadata, a shared shell, and a real 404", async ({
   page,
 }) => {
+  const expectedNavigation = ["Demo", "How it works", "Handoff log", "Privacy"];
   const routes = [
     ["/", "Confidential File Handoff — create a protected ZIP"],
     ["/?demo=1", "Demo — Confidential File Handoff"],
@@ -771,12 +848,18 @@ test("routes have exact titles, complete metadata, a shared shell, and a real 40
     await expect(page.locator("footer")).toContainText(
       "Built by Param Factory",
     );
+    expect(await page.locator("header nav a").allTextContents()).toEqual(
+      expectedNavigation,
+    );
     await expect(page.locator("h1")).toHaveCount(1);
   }
   await page.goto("/404.html");
   await expect(page).toHaveTitle("Page not found — Confidential File Handoff");
   await expect(page.locator("header .brand")).toBeVisible();
   await expect(page.locator("footer")).toBeVisible();
+  expect(await page.locator("header nav a").allTextContents()).toEqual(
+    expectedNavigation,
+  );
   const deployConfig = JSON.parse(
     await readFile("public/staticwebapp.config.json", "utf8"),
   ) as {
@@ -802,6 +885,36 @@ test("internal navigation and browser Back move focus to and announce the route 
   await expect(page.locator("#route-status")).toHaveText(
     "Confidential File Handoff — create a protected ZIP",
   );
+  await page.goto("/privacy/");
+  await page.getByRole("link", { name: "How it works" }).click();
+  await expect(page).toHaveURL("/#how-it-works");
+  await expect(page.getByRole("heading", { level: 1 })).toBeFocused();
+  await expect(page.locator("#route-status")).toHaveText(
+    "Confidential File Handoff — create a protected ZIP",
+  );
+});
+
+test("shared route headers keep the same order without mobile overflow", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+  });
+  const page = await context.newPage();
+  const expectedNavigation = ["Demo", "How it works", "Handoff log", "Privacy"];
+  for (const route of ["/", "/?demo=1", "/privacy/", "/terms/", "/404.html"]) {
+    await page.goto(route);
+    expect(await page.locator("header nav a").allTextContents()).toEqual(
+      expectedNavigation,
+    );
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+      ),
+      route,
+    ).toBe(true);
+  }
+  await context.close();
 });
 
 test("legal and not-found routes have no serious accessibility violations", async ({

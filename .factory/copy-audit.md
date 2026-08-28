@@ -45,8 +45,7 @@ Audited against the rendered landing page and demo on 2026-08-28. Word counts tr
 | Keep only the recipient, routes, and dates.                                                        |     7 |
 | I sent the protected ZIP and handoff sheet.                                                        |     8 |
 | The recipient confirmed they opened the files.                                                     |     7 |
-| Recipient note: some built-in ZIP tools do not support AES-256.                                    |    10 |
-| The handoff sheet names compatible extractors and tells the recipient what to do if opening fails. |    16 |
+| If a built-in ZIP tool cannot open it, the handoff sheet names three compatible extractors and a reporting step. |    19 |
 | This browser keeps only the recipient, dates, and delivery routes.                                 |    11 |
 | It does not keep files, file names, or access phrases.                                             |    10 |
 | No handoffs logged yet.                                                                            |     4 |
@@ -54,10 +53,9 @@ Audited against the rendered landing page and demo on 2026-08-28. Word counts tr
 | It protects file contents: someone needs the separate access phrase to read them.                  |    13 |
 | ZIP entry names remain readable.                                                                   |     5 |
 | Rename files first if their names reveal sensitive information.                                    |     9 |
-| It cannot verify your recipient or secure a compromised device.                                    |    10 |
-| It cannot stop forwarding, scan for malware, or guarantee a delivery channel.                      |    12 |
+| You enter the name and choose both routes yourself.                                                 |     9 |
 | For urgent or regulated needs, follow your professional or organisation’s requirements.            |    11 |
-| This tool makes no medical, legal, or compliance guarantee.                                        |     9 |
+| This tool does not replace those requirements.                                                      |     7 |
 | Pro costs US $9 once and adds a personal note.                                                     |    10 |
 | Creating the ZIP, handoff sheet, handoff log, and exports remains free.                            |    11 |
 | Create protected ZIP handoffs on your device.                                                      |     7 |
@@ -83,4 +81,8 @@ Audited against the rendered landing page and demo on 2026-08-28. Word counts tr
 | Access code        | ZIP access phrase |
 | Sample environment | demo              |
 
-Developer-only names such as IndexedDB and PWA remain in README and factory documentation, not first-screen copy.
+## README language check
+
+The reader-facing sections use **browser database**, **this product**, and **browser result**. Exact database names, IndexedDB, route paths, same-origin behavior, and deployment terms appear only under **Implementation notes**, **Run and verify**, or **Deploy**.
+
+No reader-facing sentence exceeds 22 words. The README uses the same terms as the interface: **protected ZIP**, **handoff sheet**, **handoff log**, **ZIP access phrase**, and **demo**.

@@ -1,1 +1,1 @@
-Create a protected ZIP and clear handoff sheet without uploading your files.
+Create an AES-256 protected ZIP and clear handoff sheet without uploading files.

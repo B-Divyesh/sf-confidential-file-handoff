@@ -8,7 +8,7 @@ Live: https://confidential-file-handoff.sociobot.in
 
 - Creates the AES-256 protected `confidential-file-handoff.zip` in the browser.
 - Creates a handoff sheet that names the ZIP and explains both delivery routes.
-- Stores only the recipient, dates, and selected routes in IndexedDB.
+- Stores only the recipient, dates, and selected routes in a browser database.
 - Exports the handoff log as JSON and imports valid exports.
 - Works offline after the first visit.
 
@@ -18,13 +18,15 @@ The app does not upload selected files, access phrases, file names, or handoff s
 
 Choose **Try it with sample data** or open [/?demo=1](https://confidential-file-handoff.sociobot.in/?demo=1). The first view shows two fictional files, Maya, both routes, and the create action.
 
-The demo uses the separate `demo:confidential-file-handoff` IndexedDB database. It never reads or changes the real handoff log. **Reset demo** clears demo activity and restores the sample. **Start for real** clears demo activity before leaving.
+The demo uses a separate browser database. It never reads or changes the real handoff log. **Reset demo** clears demo activity and restores the sample. **Start for real** clears demo activity before leaving.
 
 See [.factory/demo.md](.factory/demo.md) for the sandbox details. Every reliance claim has one observable test in [.factory/claims.json](.factory/claims.json).
 
 ## Limits
 
-This tool does not transfer files, verify recipients, scan files, or provide professional certification. It cannot hide ZIP entry names or secure a compromised device. The handoff sheet explains what to do when a built-in ZIP tool is incompatible.
+This tool does not verify recipients. ZIP entry names remain visible before the access phrase is entered. Rename sensitive file names before adding them.
+
+If opening fails, the handoff sheet names 7-Zip, Keka, and PeaZip. It asks the recipient to report their device and app.
 
 ## Run and verify
 
@@ -47,7 +49,11 @@ Read [Privacy](/privacy/) and [Terms](/terms/). Creating the ZIP, handoff sheet,
 
 Pro costs US $9 once and adds a personal note to the handoff sheet. Payment happens on the hosted [Sociobot checkout](https://api.sociobot.in/api/v1/products/confidential-file-handoff/checkout), not inside this app.
 
-License checks use the same-origin `/api/license/verify` function. It forwards a check to Sociobot and sends `Cache-Control: no-store`. It permits 20 checks per browser in 60 seconds. Its counter stores only a one-way browser digest, count, and one-minute expiry. A browser verdict is reused for less than 24 hours and only for its exact token.
+License checks pass through this product before reaching Sociobot. Responses are not cached. The gateway permits 20 checks per browser in 60 seconds. It keeps an irreversible browser identifier, a count, and a one-minute expiry. A browser result is reused for less than 24 hours and only for its exact token.
+
+## Implementation notes
+
+Demo data uses the IndexedDB database `demo:confidential-file-handoff`; real data uses `confidential-file-handoff`. License checks use the same-origin `/api/license/verify` function, which sends `Cache-Control: no-store`.
 
 ## Deploy
 

@@ -25,7 +25,28 @@
     "claim": "Creates an AES-256 protected ZIP in the browser",
     "where": "builder, handoff sheet, README",
     "test": "npm run test:browser -- --grep @claim:encrypted-local-zip",
-    "sandbox": "fresh demo; create and download the ZIP, decrypt with the sample phrase, and assert both sample entries"
+    "sandbox": "fresh demo; create and download the ZIP, assert every entry is WinZip AES with strength 3, prove missing and wrong phrases fail, then decrypt with the sample phrase"
+  },
+  {
+    "id": "zip-entry-names-visible",
+    "claim": "ZIP entry names remain visible before the access phrase is entered",
+    "where": "builder, limits, privacy, terms, README",
+    "test": "npm run test:browser -- --grep @claim:zip-entry-names-visible",
+    "sandbox": "fresh demo; download the protected ZIP, list both entry names without supplying a phrase, and do not decrypt their contents"
+  },
+  {
+    "id": "handoff-sheet-compatibility",
+    "claim": "The handoff sheet names compatible extractors and tells the recipient what to report if opening fails",
+    "where": "compatibility note, handoff sheet, terms, README",
+    "test": "npm run test:browser -- --grep @claim:handoff-sheet-compatibility",
+    "sandbox": "fresh demo; download the handoff sheet and assert 7-Zip, Keka, PeaZip, supported platforms, and the device-and-app fallback"
+  },
+  {
+    "id": "no-recipient-verification",
+    "claim": "The tool does not verify a recipient before creating a handoff",
+    "where": "limits, terms, README",
+    "test": "npm run test:browser -- --grep @claim:no-recipient-verification",
+    "sandbox": "fresh real mode; use an arbitrary first name, assert there is no account or identity field, record requests, and create the handoff without a verification step"
   },
   {
     "id": "offline-after-first-visit",
