@@ -1,74 +1,64 @@
-# Review 2 handoff — Confidential File Handoff
+# Polish round 2 handoff — Confidential File Handoff
 
 ## Status
 
-Independent review completed. No product code was modified. The review verdict is **FAIL**: two blocking claims-contract findings and two minor consistency/copy findings remain.
+Complete. Every finding in `.factory/review-1.md` and `.factory/review-2.md` is fixed, tested, pushed, deployed, and rechecked cold on the live URL. No known product gap or deferred minor item remains.
 
 ## What changed
 
-- Replaced the demo’s repeated landing page with a populated first-viewport workspace at `/?demo=1` and `/demo`.
-- Kept demo data in its own IndexedDB database with reset and exit controls.
-- Expanded the reliance inventory to 22 claims with one observable test per claim.
-- Added complete metadata, a shared shell, route focus announcements, a styled 404, and a 1200×630 social image.
-- Removed the dead footer link and added a full link crawl.
-- Rewrote every flagged sentence and standardized **protected ZIP**, **handoff sheet**, **handoff log**, and **ZIP access phrase**.
-- Preserved the dithered security-print visual identity and improved mobile text sizing.
+- Added explicit, observable claims for ZIP filename exposure, extractor/fallback guidance, and the absence of recipient verification.
+- Made the AES-256 claim test prove WinZip AES strength 3, reject missing and wrong phrases, and decrypt with the correct phrase.
+- Standardized the ordered header navigation on Root, Demo, Privacy, Terms, 404, and offline pages.
+- Fixed focus restoration for cross-page hash links as well as normal navigation and Back/Forward.
+- Removed untestable public limitation promises and moved README implementation jargon into developer sections.
+- Updated `.factory/claims.json`, `.factory/copy-audit.md`, `.factory/catalog-description.txt`, and `.factory/polish-2.md`.
+- Preserved the dithered security-print identity and original product artwork.
 
-## Local verification
+## Verification
 
+A fresh local clone of commit `82e1e2a842082108a8df6c5d29dfe2a469b026e2` passed:
+
+- Every command in `.factory/claims.json`, run separately: 25/25.
+- Claim-tag audit: every one of 25 IDs occurs exactly once in test source.
 - `npm run typecheck`: pass.
 - `npm run lint`: pass.
-- `npm test`: 4 Vitest and 9 gateway tests pass.
-- `npm run build`: pass; `dist/index.html` exists.
-- `npm run test:browser`: 32/32 pass.
-- Every `.factory/claims.json` tag occurs exactly once and every listed command passes.
-- `verify-url.sh` passes root and `/?demo=1` with no console errors.
-- Playwright axe integration finds no violations in both mobile themes and no serious/critical legal or 404 issues.
-- Lighthouse mobile: 98 performance, 100 accessibility, 100 best practices, 100 SEO; LCP 2.4 s, CLS 0, TBT 0 ms.
-- Initial bundles: 71.34 KB JS gzip and 4.20 KB CSS gzip.
+- `npm test`: 4 Vitest tests and 9 gateway tests pass.
+- `npm run build`: pass; `dist/index.html` and `dist/demo/index.html` exist.
+- `npm run test:browser`: 36/36 pass.
+- Initial bundles: 71.30 KB JS gzip and 4.20 KB CSS gzip.
+- Local `verify-url.sh`: Root, Demo, Privacy, and Terms return 200 with exact titles, `lang=en`, one h1, a main landmark, labelled buttons/images, and no console errors.
+- Local Lighthouse mobile: performance 98, accessibility 100, best practices 100, SEO 100; LCP 2.3 s, CLS 0, TBT 120 ms.
 
-Evidence is under `.factory/evidence/polish-1-local/` and in the two `polish-1-local-*-mobile.png` screenshots.
-
-## Clean-clone verification
-
-A fresh clone at candidate commit `882d179cbde82af9613e694afda159ba773a05ef` passed:
-
-- All 22 commands in `.factory/claims.json`, run independently: 22/22.
-- `npm test`: 4 Vitest and 9 gateway tests.
-- `npm run lint` and `npm run typecheck`.
-- `npm run build`: generated `dist/`.
-- `npm run test:browser`: 32/32.
+The browser suite covers successful and failed ZIP decryption, duplicate filenames, delayed acknowledgements, blocked storage, strict import validation, license boundaries, demo isolation/reset/exit, privacy request logs, offline creation, metadata, focus, 404, links, mobile touch targets, both color schemes, and axe accessibility checks.
 
 ## Deployment and live verification
 
+- Repair commit pushed to `origin/main`: `82e1e2a842082108a8df6c5d29dfe2a469b026e2`.
+- Azure Static Web Apps deployment ID: `4b4b963f-6103-4c97-a762-1ed72159e132`.
 - Live URL: `https://confidential-file-handoff.sociobot.in`.
-- Deployed repair commit: `882d179cbde82af9613e694afda159ba773a05ef`.
-- Azure Static Web Apps deployment ID: `4e020d35-3576-4d58-908d-4d60177327a5`.
-- `verify-url.sh` passes Root, Demo, Privacy, and Terms with exact titles, one h1, a main landmark, labels, alt text, and no console errors.
-- Cold 390×844 audit: 33/33 checks pass. It covers the one-click demo, isolated namespaces, sample creation, sheet contents, reset, exit, route metadata, focus, 404, privacy, and mobile placement.
-- Live offline audit: the service worker controls `/?demo=1`; reload and sample creation work with the browser offline.
-- Live axe audit: zero violations on Root, Demo, Privacy, Terms, and 404.
-- Live link crawl: every rendered link resolves; checkout reaches the Dodo-hosted page with status 200; no dead Param Factory link remains.
-- Live Lighthouse mobile: 99 performance, 100 accessibility, 100 best practices, 100 SEO; LCP 2.0 s, CLS 0, TBT 0 ms.
+- Production footer build: `82e1e2a`.
+- Cold live demo/archive audit: 18/18 checks pass, including first-viewport sample/action, isolated database, Reset, same-origin requests, AES-256 metadata, missing/wrong phrase rejection, successful decryption, visible entry names, and exact compatibility guidance.
+- Cold live route audit: 24/24 checks pass across Root, Demo, Privacy, Terms, and 404, including the identical header, 390px overflow, semantic skeleton, route focus/announcement, and zero serious/critical axe findings.
+- Live offline audit: service worker controls the demo; cold offline reload and sample handoff creation pass.
+- Live unknown route returns HTTP 404 with the designed page.
+- Final `verify-url.sh` checks report no console or page errors.
+- Final live Lighthouse mobile: performance 98, accessibility 100, best practices 100, SEO 100; LCP 2.1 s, CLS 0, TBT 130 ms.
 
-Live evidence is under `.factory/evidence/polish-1-live/`, including mobile screenshots and machine-readable audit JSON.
+Evidence is in `.factory/evidence/polish-2-local/` and `.factory/evidence/polish-2-live/`. The live prepared demo is `.factory/evidence/polish-2-live/demo-created-mobile.png`.
 
-## Run
+## Run and verify
 
 ```sh
 npm ci
-npm test
-npm run lint
 npm run typecheck
+npm run lint
+npm test
 npm run build
 npm run test:browser
 ```
 
+Run every `test` command in `.factory/claims.json` separately to reproduce the claim audit.
+
 ## Known gaps and next steps
 
-See `.factory/review-2.md` for complete evidence and the copy inventory. The next repair must:
-
-1. Register and observe-test ZIP entry-name visibility and recipient compatibility guidance.
-2. Make the AES-256 claim test assert encryption, failure with a wrong password, and the encryption method/strength.
-3. Use identical header navigation on every route.
-4. Replace reader-facing README implementation jargon with plain language or move it to developer documentation.
+None.
