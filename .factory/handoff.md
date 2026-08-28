@@ -1,63 +1,69 @@
 # Confidential File Handoff — repair handoff
 
-## Status: FAIL — independent verification 4 found live release blockers
+## Status: deployed and verified
 
-- Work order: `confidential-file-handoff-repair-2`
-- Repair base: `25e73b221b158b0d4834c18db4b600766f6fa190`
-- Repair commits: `277714e` and `26e2d5a`
-- Deployment class: static PWA with same-origin `api/` function
-- Built output: `dist/` with `index.html` at its root
+- Work order: `confidential-file-handoff-repair-3`
+- Verification failure repaired: `8451fa180b4864915e5d9c5bddf4548ab790a217` / candidate `00eaf393928e853f4f7e16becbd9b4b40b421756`
+- Final repair commits: `bc9a68a`, `4052811`, `2f54e42`, `a669b80`
+- Deployment: <https://confidential-file-handoff.sociobot.in/>
+- Artifact class: static offline PWA with a same-origin managed license function; `dist/index.html` is the deploy root.
 
-## Repaired findings
+## Repaired release blockers
 
-- Added `.factory/claims.json` with four observable claims. Each has exactly one Playwright command and runs from `/demo`.
-- Added `/demo` and `?demo=1`. Demo seeds two fictional redacted files and a realistic two-channel handoff. It uses IndexedDB `demo:confidential-file-handoff`, never the real database. Its banner includes **Reset demo** and **Start for real**. `.factory/demo.md` documents this contract.
-- Rewrote the first screen to name senders of tax, medical, legal, identity, and credential files to recipients who need plain steps. It now includes the required offline and US $9 one-time facts.
-- Repaired Pro verification. A token stays locked until a successful definitive verification. HTTP 429/503/network failures preserve only a previously verified valid cache and never write an invalid verdict.
-- Linked recipient and saved-password errors with `aria-describedby`; invalid submission moves focus to the first invalid control and gives an actionable live message.
-- Added metadata, canonical/OG/Twitter/apple-touch tags, robots, sitemap, static 404, legal-page semantic shells, a build id, Param Factory links, and the required copy audit.
+1. The license gateway no longer uses a per-instance `Map`. It uses a shared Azure Table counter with conditional ETag updates, hashed browser identity rows, a one-minute expiry, 20 checks per client per 60 seconds, `429`, and `Retry-After`. The deployed managed API is configured with the factory's existing private storage connection; no secret is in Git.
+2. Pro is now locked for a newly stored or swapped token while verification is in flight. A cached valid verdict works only for the exact token that produced it. A delayed invalid verification cannot enable the note or put it in a recipient sheet.
+3. **Start for real** clears `demo:confidential-file-handoff` before leaving `/demo`, so returning to the demo has no prior sample checklist.
+4. Registered eight exact claims in `.factory/claims.json`, including AES-256/no-upload, narrow checklist and password exclusion, Pro entitlement, demo exit discard, and the 20-per-minute gateway allowance. Each has tagged observable coverage.
 
 ## Verification evidence
 
-Fresh clean install and quality gates passed on 2026-08-28 UTC:
+Fresh install and local gates passed on 2026-08-28 UTC:
 
 ```sh
 npm ci
-npm audit --audit-level=low            # 0 vulnerabilities
-npm run typecheck                      # pass
-npm run lint                           # pass
-npm test                               # 4 Vitest + 2 API tests pass
-npm run build                          # pass; dist/ generated
-npm run test:browser                   # 14/14 Chromium tests pass
+npm ci --prefix api
+npm audit --audit-level=low             # 0 vulnerabilities
+npm audit --prefix api --audit-level=low # 0 vulnerabilities
+npm test                                 # 4 Vitest + 4 API tests pass
+npm run lint                            # pass
+npm run typecheck                       # pass
+npm run build                           # pass; dist/ produced
+npm run test:browser                    # 17/17 Chromium tests pass
 ```
 
-Claim commands all passed independently:
+The browser suite covers desktop and 390px light/dark keyboard/touch states, reduced motion, offline reload and packet creation, service-worker update behavior, Playwright axe scans, import validation, export, response-policy routes, delayed license verification, and demo cleanup. The browser suite's axe-core integration found zero violations. The standalone `@axe-core/cli` process could not start Chrome in this container; this was an environment launch failure, not an axe result.
 
-```sh
-npm run test:browser -- --grep @claim:demo-sandbox
-npm run test:browser -- --grep @claim:encrypted-local-zip
-npm run test:browser -- --grep @claim:offline-after-first-visit
-npm run test:browser -- --grep @claim:local-log-export
+All listed claim commands passed. The rate-limit claim alternates 21 calls across two simulated managed-function instances sharing the Table adapter, then asserts request 21 is `429` with `Retry-After`. Its regression also covers a rotating proxy edge address with a stable browser identity.
+
+`/opt/fleet/lib/verify-url.sh http://127.0.0.1:4173 .factory/evidence/repair-3-local` passed: 639 ms load, no console errors, title, `lang=en`, one h1, main landmark, image alt coverage, and labelled buttons. Live `verify-url.sh` passed in 754 ms with the same checks; evidence is in `.factory/evidence/repair-3-live/`.
+
+Live deployment identity matched the production output SHA-256 for `/`, `/privacy/`, and `/sw.js`. `/demo`, `/privacy/`, and `/terms/` each returned HTTP 200.
+
+The decisive live license boundary was run sequentially from one browser identity with an invalid token:
+
+```text
+requests 1–20: 200
+request 21:    429
+Retry-After:   53
+X-RateLimit-Limit: 20
+X-RateLimit-Remaining: 0
+Cache-Control: no-store
+body.reason: rate_limited
 ```
 
-The claim tests prove a resettable isolated demo, an AES ZIP that decrypts with the demo password, same-origin-only core traffic, offline reload plus local packet creation, and checklist-only export fields. The full suite retains coverage for duplicate ZIP names, wrong-password rejection, print content, unavailable IndexedDB, import recovery, delayed acknowledgement, service-worker privacy offline behavior, response-policy routing, 390px light/dark keyboard/touch/reduced-motion behavior, and axe-core zero-violation scans.
+Production assets: JavaScript 166,167 B (70,510 B gzip), CSS 13,134 B (3,810 B gzip), hero image 154,836 B. These remain inside the static/PWA budget.
 
-`/opt/fleet/lib/verify-url.sh http://127.0.0.1:4173 .factory/evidence/repair-2` passed: 653 ms load; no console errors; title, `lang=en`, one h1, main landmark, and image alt checks all pass. Screenshots and `verify.json` are in `.factory/evidence/repair-2/`.
-
-Deployed to <https://confidential-file-handoff.sociobot.in/>. Post-deploy `verify-url.sh` passed in 687 ms with no console errors. Live `/demo` had the Demo title, sample banner, two selected sample files, and no console errors at 390px. Live `/does-not-exist` returned HTTP 404; live `robots.txt` and `sitemap.xml` returned HTTP 200. Live evidence is in `.factory/evidence/repair-2/live/`.
-
-Production assets are 165,955 B JS (70,450 B gzip), 13,134 B CSS (3,810 B gzip), and 154,836 B hero image. The separate axe CLI could not launch Chrome in this container; Playwright’s pinned Chromium axe integration ran successfully in the browser suite. Two Lighthouse 13 attempts could not connect to the container Chromium; the prior independent live mobile result was 96 Performance / 100 Accessibility / 100 Best Practices / 100 SEO. No performance claims were added or changed. `/demo` is a real Vite page and unknown static routes use the designed 404 response.
-
-## Deploy and post-deploy
-
-Deploy with:
+## Run and deploy
 
 ```sh
+npm ci
+npm ci --prefix api
+npm test
+npm run lint
+npm run typecheck
+npm run build
+npm run test:browser
 /opt/fleet/lib/deploy-static.sh confidential-file-handoff dist
 ```
 
-After deployment, rerun `verify-url.sh` against the HTTPS URL, the four claim commands, the live same-origin license-rate-limit check, and an old-worker update check. The later independent-verification result below supersedes this earlier repair handoff.
-
-## Independent verification 4 (2026-08-28 UTC)
-
-**FAIL. Do not release candidate `00eaf393928e853f4f7e16becbd9b4b40b421756`.** Static deployment identity, clean build/test gates, four claim tests, first-read/demo, core offline flow, accessibility, and service-worker update behavior passed. However, the live same-origin license endpoint returned `200` for requests 1 through 21 from one client even though its documented allowance is 20/minute; request 21 did not return `429` or `Retry-After`. The live paid-note verification race and demo-exit data retention were also reproduced, and material reliance claims remain unregistered. Full evidence and exact reproduction are in `.factory/verification-4.md`.
+No known product gaps remain from verification 4.
