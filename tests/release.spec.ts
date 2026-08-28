@@ -191,12 +191,59 @@ test('an unverified token stays locked during a network failure and temporary er
   await expect(page.locator('#custom-note')).toBeDisabled();
   await expect(page.locator('#license-status')).toContainText('Pro stays locked');
   expect(await page.evaluate(() => localStorage.getItem('sb_license_verdict:confidential-file-handoff'))).toBeNull();
-  await page.evaluate(() => localStorage.setItem('sb_license_verdict:confidential-file-handoff', JSON.stringify({ checkedAt: Date.now() - 90_000_000, valid: true })));
+  await page.evaluate(() => localStorage.setItem('sb_license_verdict:confidential-file-handoff', JSON.stringify({ checkedAt: Date.now() - 90_000_000, valid: true, license: 'not-a-real-license' })));
   await page.reload();
   await expect(page.locator('#custom-note')).toBeEnabled();
   await expect(page.locator('#license-status')).toContainText('last verified check');
   const cache = await page.evaluate(() => localStorage.getItem('sb_license_verdict:confidential-file-handoff'));
   expect(JSON.parse(cache || '{}').valid).toBe(true);
+});
+
+test('@claim:pro-note-entitlement first-use tokens stay locked until verified and cannot enter a sheet', async ({ page }) => {
+  let releaseVerification: (() => void) | undefined;
+  await page.route('**/api/license/verify?**', async (route) => {
+    await new Promise<void>((resolve) => { releaseVerification = () => resolve(); });
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ valid: false, reason: 'invalid', expires_at: null }) });
+  });
+  await page.goto('/?license=never-verified-qa-token', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('#license-status')).toContainText('Checking your license');
+  await expect(page.locator('#custom-note')).toBeDisabled();
+  await page.locator('#custom-note').evaluate((element: HTMLTextAreaElement) => { element.value = 'This must never be exported.'; });
+  await preparePacket(page);
+  const downloadPromise = page.waitForEvent('download');
+  await page.locator('#download-sheet').click();
+  expect(await readFile(await (await downloadPromise).path() as string, 'utf8')).not.toContain('This must never be exported.');
+  releaseVerification?.();
+  await expect(page.locator('#license-status')).toContainText('License no longer active');
+  await expect(page.locator('#custom-note')).toBeDisabled();
+});
+
+test('@claim:demo-exit-discard leaving the demo clears its checklist before real mode', async ({ page }) => {
+  await page.goto('/demo');
+  await page.locator('#prepare').click();
+  await expect(page.locator('#record-list')).toContainText('Maya');
+  await Promise.all([page.waitForURL('/'), page.locator('#start-real').click()]);
+  await page.goto('/demo');
+  await expect(page.locator('#record-list')).toContainText('No handoffs logged yet');
+});
+
+test('@claim:checklist-secrets-excluded only the checklist fields are retained and the password stays out of the sheet', async ({ page }) => {
+  await page.goto('/demo');
+  await page.locator('#prepare').click();
+  const downloadPromise = page.waitForEvent('download');
+  await page.locator('#download-sheet').click();
+  const sheet = await readFile(await (await downloadPromise).path() as string, 'utf8');
+  expect(sheet).not.toContain('sample-password-2026');
+  const stored = await page.evaluate(async () => new Promise<Record<string, unknown>[]>((resolve, reject) => {
+    const request = indexedDB.open('demo:confidential-file-handoff', 1);
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      const all = request.result.transaction('handoffs').objectStore('handoffs').getAll();
+      all.onsuccess = () => resolve(all.result);
+      all.onerror = () => reject(all.error);
+    };
+  }));
+  expect(Object.keys(stored[0]).sort()).toEqual(['createdAt', 'delivery', 'id', 'passwordChannel', 'recipient']);
 });
 
 test('invalid submit focuses the first associated field and announces its correction', async ({ page }) => {

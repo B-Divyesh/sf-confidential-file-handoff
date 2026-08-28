@@ -14,7 +14,7 @@ Live: https://confidential-file-handoff.sociobot.in
 
 ## Try the demo
 
-Choose **Try it with sample data** or open [/demo](/demo). The demo has two fictional redacted files, uses the `demo:confidential-file-handoff` IndexedDB namespace, and never reads or writes real handoff data. Use **Reset demo** to clear its checklist. See [.factory/demo.md](.factory/demo.md) for the exact sandbox behavior.
+Choose **Try it with sample data** or open [/demo](/demo). The demo has two fictional redacted files, uses the `demo:confidential-file-handoff` IndexedDB namespace, and never reads or writes real handoff data. Use **Reset demo** to clear its checklist; **Start for real** clears it before leaving demo mode. See [.factory/demo.md](.factory/demo.md) for the exact sandbox behavior.
 
 Every reliance claim has a sandbox regression test in [.factory/claims.json](.factory/claims.json). Run each listed command from a clean checkout.
 
@@ -40,7 +40,7 @@ npm run test:browser
 
 ## Privacy and paid unlock
 
-See [/privacy/](/privacy/) and [/terms/](/terms/). The free core workflow is complete. A US $9 one-time Pro license, sold by Sociobot/Dodo, unlocks a personal note on the recipient sheet; the product never embeds a payment provider. License checks use the same-origin `/api/license/verify` managed function, which forwards to Sociobot, limits each client to 20 checks per minute, and does not cache responses. Browser verdicts are reused for at most one day.
+See [/privacy/](/privacy/) and [/terms/](/terms/). The free core workflow is complete. A US $9 one-time Pro license, sold by Sociobot/Dodo, adds a personal note to the recipient sheet. The product never embeds a payment provider. License checks use the same-origin `/api/license/verify` managed function. It forwards to Sociobot. It allows at most 20 checks per client in 60 seconds. It does not cache responses. The shared counter keeps a one-way client-address digest, count, and one-minute expiry. Browser verdicts last at most one day. They apply only to the exact verified token.
 
 ## Deploy
 

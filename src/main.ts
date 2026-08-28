@@ -9,13 +9,15 @@ const isDemo = location.pathname === '/demo' || new URLSearchParams(location.sea
 if (isDemo) document.title = 'Demo — Confidential File Handoff';
 const store = new HandoffStore(isDemo ? `demo:${SLUG}` : undefined);
 let activeRecord: HandoffRecord | undefined;
-let proUnlocked = !isDemo && Boolean(localStorage.getItem(LICENSE_KEY));
+// A token is not an entitlement. Only a verdict previously verified for this
+// exact token may unlock Pro while a fresh check is running.
+let proUnlocked = false;
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
 app.innerHTML = `
   <header class="site-header"><a class="brand" href="/" aria-label="Confidential File Handoff home"><span class="brand-mark" aria-hidden="true">↗</span> Confidential<br>File Handoff</a><nav aria-label="Site"><a href="/demo">Demo</a><a href="#how-it-works">How it works</a><a href="#records">Handoff log</a><a href="/privacy/">Privacy</a></nav></header>
   <main id="main">
-    <aside id="demo-banner" class="demo-banner" ${isDemo ? '' : 'hidden'} aria-label="Demo mode"><strong>Demo — sample data, nothing is saved.</strong><span>Sample files and checklist use a separate browser space.</span><button class="link-button" id="reset-demo" type="button">Reset demo</button><a class="link-button" href="/">Start for real</a></aside>
+    <aside id="demo-banner" class="demo-banner" ${isDemo ? '' : 'hidden'} aria-label="Demo mode"><strong>Demo — sample data, nothing is saved.</strong><span>Sample files and checklist use a separate browser space.</span><button class="link-button" id="reset-demo" type="button">Reset demo</button><a class="link-button" id="start-real" href="/">Start for real</a></aside>
     <section class="hero" aria-labelledby="page-title">
       <div class="hero-copy"><p class="eyebrow">A simple procedure for sensitive files</p><h1 id="page-title">Send sensitive files with clear instructions.</h1><p class="lede">For people sending tax, medical, legal, identity, or credential files to a recipient who may need plain steps.</p><div class="hero-actions"><a class="button button-primary" href="/demo">Try it with sample data <span aria-hidden="true">→</span></a><a class="button button-secondary" href="#builder">Prepare a handoff <span aria-hidden="true">↓</span></a></div><p class="microcopy">No upload. Works offline after first visit. Free core tools; Pro is US $9 once.</p></div>
       <figure class="hero-art"><img src="/print-desk.webp" width="900" height="600" alt="" fetchpriority="high" decoding="async"><figcaption>Original generated print illustration. This app does not send your files anywhere.</figcaption></figure>
@@ -195,16 +197,28 @@ document.querySelector<HTMLInputElement>('#import-records')!.addEventListener('c
 function storedLicense(): string | null { return isDemo ? null : localStorage.getItem(LICENSE_KEY); }
 function setLicenseStatus(message: string) { document.querySelector('#license-status')!.textContent = message; }
 function setProUnlocked(unlocked: boolean) { proUnlocked = unlocked; const note = document.querySelector<HTMLTextAreaElement>('#custom-note')!; const help = document.querySelector<HTMLElement>('#custom-note-help')!; note.disabled = !unlocked; help.textContent = unlocked ? 'Pro is active. This note is included only in the downloaded recipient sheet.' : 'Unlock Pro to add a short note to the recipient handoff sheet.'; }
-function cachedLicenseVerdict(): { checkedAt: number; valid: boolean } | null { try { const value = JSON.parse(localStorage.getItem(LICENSE_CACHE_KEY) || 'null') as { checkedAt?: unknown; valid?: unknown } | null; return value && typeof value.checkedAt === 'number' && typeof value.valid === 'boolean' ? value as { checkedAt: number; valid: boolean } : null; } catch { return null; } }
+function cachedLicenseVerdict(): { checkedAt: number; valid: boolean; license: string } | null {
+  try {
+    const value = JSON.parse(localStorage.getItem(LICENSE_CACHE_KEY) || 'null') as { checkedAt?: unknown; valid?: unknown; license?: unknown } | null;
+    return value && typeof value.checkedAt === 'number' && typeof value.valid === 'boolean' && typeof value.license === 'string'
+      ? value as { checkedAt: number; valid: boolean; license: string }
+      : null;
+  } catch { return null; }
+}
 async function verifyLicense(force = false) {
   const license = storedLicense();
   if (!license) return;
-  const cache = cachedLicenseVerdict();
+  const storedVerdict = cachedLicenseVerdict();
+  const cache = storedVerdict?.license === license ? storedVerdict : null;
   if (!force && cache && Date.now() - cache.checkedAt < 86_400_000) {
     setProUnlocked(cache.valid);
     setLicenseStatus(cache.valid ? 'Pro is unlocked on this device.' : 'This license is not active.');
     return;
   }
+  // An earlier successful verdict for this same token may keep working while
+  // the daily reconciliation runs. A new, swapped, or unverified token stays
+  // locked until the gateway gives a definitive valid result.
+  setProUnlocked(cache?.valid === true);
   setLicenseStatus('Checking your license…');
   try {
     const response = await fetch(`/api/license/verify?license=${encodeURIComponent(license)}`);
@@ -212,7 +226,7 @@ async function verifyLicense(force = false) {
     const verdict = await response.json() as { valid?: unknown; reason?: unknown };
     if (typeof verdict.valid !== 'boolean') throw new Error('Invalid license response');
     // Only a definitive 200 response is retained. Temporary outages must not revoke a buyer.
-    localStorage.setItem(LICENSE_CACHE_KEY, JSON.stringify({ checkedAt: Date.now(), valid: verdict.valid }));
+    localStorage.setItem(LICENSE_CACHE_KEY, JSON.stringify({ checkedAt: Date.now(), valid: verdict.valid, license }));
     setProUnlocked(verdict.valid);
     setLicenseStatus(verdict.valid ? 'Pro is unlocked on this device.' : 'License no longer active. You can purchase a new unlock.');
   } catch {
@@ -241,6 +255,12 @@ window.addEventListener('online', () => setStatus('You are back online.', 'succe
 if (isDemo) {
   loadDemoSample();
   document.querySelector('#reset-demo')!.addEventListener('click', async () => { await store.clear(); loadDemoSample(); await renderRecords(); });
+  document.querySelector<HTMLAnchorElement>('#start-real')!.addEventListener('click', async (event) => {
+    event.preventDefault();
+    // Demo state is deliberately disposable. Clearing before navigation means
+    // a later visit to /demo starts with the shipped sample, not old activity.
+    try { await store.clear(); } finally { location.assign('/'); }
+  });
   setLicenseStatus('Pro is unavailable in the sample demo.');
 } else verifyLicense();
 renderRecords();

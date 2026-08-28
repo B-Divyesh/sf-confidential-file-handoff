@@ -2,7 +2,7 @@ import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['dist/**', 'node_modules/**', 'graphify-out/**', 'assets/**'] },
+  { ignores: ['dist/**', 'node_modules/**', 'graphify-out/**', 'assets/**', '.factory/evidence/**'] },
   eslint.configs.recommended,
   tseslint.configs.recommended,
   {
@@ -24,7 +24,7 @@ export default tseslint.config(
   },
   {
     files: ['api/**/*.cjs'],
-    languageOptions: { globals: { module: 'readonly', require: 'readonly', fetch: 'writable', AbortSignal: 'readonly', Response: 'readonly', global: 'readonly' } },
+    languageOptions: { globals: { module: 'readonly', require: 'readonly', fetch: 'writable', AbortSignal: 'readonly', Response: 'readonly', global: 'readonly', process: 'readonly' } },
     rules: { '@typescript-eslint/no-require-imports': 'off' }
   }
 );
