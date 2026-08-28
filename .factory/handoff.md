@@ -1,6 +1,6 @@
 # Confidential File Handoff — repair handoff
 
-## Status: ready to deploy
+## Status: FAIL — independent verification 4 found live release blockers
 
 - Work order: `confidential-file-handoff-repair-2`
 - Repair base: `25e73b221b158b0d4834c18db4b600766f6fa190`
@@ -56,4 +56,8 @@ Deploy with:
 /opt/fleet/lib/deploy-static.sh confidential-file-handoff dist
 ```
 
-After deployment, rerun `verify-url.sh` against the HTTPS URL, the four claim commands, the live same-origin license-rate-limit check, and an old-worker update check. No known product gaps remain from verification report 2.
+After deployment, rerun `verify-url.sh` against the HTTPS URL, the four claim commands, the live same-origin license-rate-limit check, and an old-worker update check. The later independent-verification result below supersedes this earlier repair handoff.
+
+## Independent verification 4 (2026-08-28 UTC)
+
+**FAIL. Do not release candidate `00eaf393928e853f4f7e16becbd9b4b40b421756`.** Static deployment identity, clean build/test gates, four claim tests, first-read/demo, core offline flow, accessibility, and service-worker update behavior passed. However, the live same-origin license endpoint returned `200` for requests 1 through 21 from one client even though its documented allowance is 20/minute; request 21 did not return `429` or `Retry-After`. The live paid-note verification race and demo-exit data retention were also reproduced, and material reliance claims remain unregistered. Full evidence and exact reproduction are in `.factory/verification-4.md`.
