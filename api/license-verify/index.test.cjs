@@ -90,6 +90,14 @@ test('fails closed when durable rate-limit storage is unavailable', async () => 
   }
 });
 
+test('@regression:managed-function log functions do not turn an upstream outage into HTTP 500', async () => {
+  verify._setRateLimiterForTests(verify._createMemoryRateLimiterForTests());
+  global.fetch = async () => { throw new Error('upstream unavailable'); };
+  const response = await verify({ log() {} }, { headers: {}, query: { license: 'test-token' } });
+  assert.equal(response.status, 503);
+  assert.equal(response.headers['Retry-After'], '60');
+});
+
 test('@regression:managed-function-runtime keeps the Azure Table dependency Node 18 compatible', () => {
   // Azure Static Web Apps runs this managed function on Node 18. A caret range
   // previously resolved Azure transitive packages requiring Node 22, which made

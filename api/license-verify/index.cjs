@@ -31,6 +31,7 @@ function createMemoryRateLimiter() {
 function status(error) { return Number(error?.statusCode ?? error?.status ?? 0); }
 function isMissing(error) { return status(error) === 404; }
 function isConflict(error) { return status(error) === 409 || status(error) === 412; }
+function warn(context, message) { context.log?.warn?.(message); }
 
 /**
  * Azure Table Storage is shared by every managed-function instance. Updates use
@@ -112,7 +113,7 @@ module.exports = async function licenseVerify(context, req) {
   let limit;
   try { limit = await getRateLimiter().take(clientKey(req)); }
   catch {
-    context.log.warn('License verification rate-limit storage was unavailable.');
+    warn(context, 'License verification rate-limit storage was unavailable.');
     return { status: 503, headers: { ...headers, 'Retry-After': '60' }, body: { valid: false, reason: 'unavailable', expires_at: null } };
   }
   const rateHeaders = { ...headers, 'X-RateLimit-Remaining': String(limit.remaining) };
@@ -126,7 +127,7 @@ module.exports = async function licenseVerify(context, req) {
     const body = await upstream.json();
     return { status: upstream.status, headers: rateHeaders, body };
   } catch {
-    context.log.warn('License verification upstream was unavailable.');
+    warn(context, 'License verification upstream was unavailable.');
     return { status: 503, headers: { ...rateHeaders, 'Retry-After': '60' }, body: { valid: false, reason: 'unavailable', expires_at: null } };
   }
 };
