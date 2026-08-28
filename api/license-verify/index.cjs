@@ -1,7 +1,6 @@
 'use strict';
 
 const { createHash } = require('node:crypto');
-const { TableClient } = require('@azure/data-tables');
 
 const WINDOW_MS = 60_000;
 const MAX_REQUESTS = 20;
@@ -9,6 +8,12 @@ const PRODUCT = 'confidential-file-handoff';
 const VERIFY_URL = `https://api.sociobot.in/api/v1/products/${PRODUCT}/verify`;
 const TABLE_NAME = 'LicenseRateLimits';
 const PARTITION_KEY = 'license-verify';
+let TableClient;
+
+function tableClient() {
+  if (!TableClient) ({ TableClient } = require('@azure/data-tables'));
+  return TableClient;
+}
 
 function result(count, resetAt, now) {
   return { allowed: count <= MAX_REQUESTS, remaining: Math.max(0, MAX_REQUESTS - count), retryAfter: Math.max(1, Math.ceil((resetAt - now) / 1_000)) };
@@ -40,7 +45,7 @@ function warn(context, message) { context.log?.warn?.(message); }
  */
 class AzureTableRateLimiter {
   constructor(connectionString, client) {
-    this.client = client || TableClient.fromConnectionString(connectionString, TABLE_NAME);
+    this.client = client || tableClient().fromConnectionString(connectionString, TABLE_NAME);
     this.ready = this.client.createTable();
     this.lastCleanup = 0;
   }
