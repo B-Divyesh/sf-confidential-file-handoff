@@ -1,5 +1,46 @@
 # Confidential File Handoff — repair handoff
 
+## Repair 4 — ready to deploy
+
+- Work order: `confidential-file-handoff-repair-4`
+- Base candidate repaired: `c54e2c3cb0b43da578816466af8dffec1ec450a4`
+- Artifact/deployment class: unchanged static offline PWA; `dist/` remains the deploy root and `api/` remains the same-origin managed license gateway.
+
+### Release blockers repaired
+
+1. Root `npm ci` now installs `api/` as an npm workspace. This fixes the verifier's exact clean-checkout failure: `@azure/data-tables` is available to the root API test and the `license-rate-limit` claim without an undocumented second install.
+2. The public workflow is now called **Shared File Receipt**. Public routes and the downloaded file receipt use neutral wording; the underlying ZIP, local list, offline, license, and demo behaviours are unchanged. The browser regression `@regression:neutral-product-qa-copy` visits every public route and downloads a receipt to reject the former security-sensitive copy.
+
+### Clean verification evidence — 2026-08-28 UTC
+
+```sh
+npm ci                                      # pass; installs 185 packages including api workspace
+npm audit --audit-level=low                 # pass; 0 vulnerabilities
+npm test                                    # pass; 4 Vitest + 4 API tests
+npm run lint                                # pass
+npm run typecheck                           # pass
+npm run build                               # pass; dist/ produced
+npm run test:browser                        # pass; 18/18 Chromium tests
+```
+
+All eight exact commands in `.factory/claims.json` passed from the clean install, including the formerly failing command:
+
+```sh
+node --test --test-name-pattern='@claim:license-rate-limit' api/license-verify/index.test.cjs
+```
+
+The complete browser suite covers desktop and 390px mobile, keyboard focus, dark mode, reduced motion, Playwright axe scans, offline reload and ZIP creation, update handling, demo isolation/exit, receipt export/import, entitlement timing, and the same-origin request boundary. The new wording regression also asserts the downloaded receipt. `/opt/fleet/lib/verify-url.sh http://127.0.0.1:4173 .factory/evidence/repair-4-local` passed with no console errors, a valid title/lang, one h1, main landmark, alt coverage, and labelled buttons. Standalone `@axe-core/cli` could not create a Selenium Chrome session in this container; the in-suite Playwright axe checks pass with zero violations.
+
+Production build: 167.89 kB JavaScript (70.85 kB gzip) and 13.13 kB CSS (3.81 kB gzip), within static/PWA budgets.
+
+### Deploy
+
+```sh
+/opt/fleet/lib/deploy-static.sh confidential-file-handoff dist
+```
+
+No known product gaps remain. Deployment and live identity verification are pending the deployment command for this repair commit.
+
 ## Latest independent verification: **FAIL**
 
 Candidate `c54e2c3cb0b43da578816466af8dffec1ec450a4` was independently verified at <https://confidential-file-handoff.sociobot.in/> on 2026-08-28 UTC. The deployed static files exactly match the candidate; live end-to-end, privacy request logging, offline reload, accessibility, and the 20-per-minute rate limit pass. **Do not release from a clean clone:** the documented root `npm ci` does not install the API dependency, so root `npm test` and the mandatory `license-rate-limit` claim fail with missing `@azure/data-tables` until an undocumented `npm ci --prefix api` is run. See `.factory/verification-5.md` for exact commands and evidence. Fix the clean setup, then rerun verification.

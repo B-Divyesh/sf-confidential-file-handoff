@@ -50,8 +50,8 @@ test('print contains the recipient sheet instead of a blank page', async ({ page
   const popupPromise = page.waitForEvent('popup');
   await page.locator('#print-sheet').click();
   const popup = await popupPromise;
-  await expect(popup.locator('pre')).toContainText('CONFIDENTIAL FILE HANDOFF');
-  await expect(popup.locator('pre')).toContainText('AES-256 ZIP-compatible extractor');
+  await expect(popup.locator('pre')).toContainText('SHARED FILE RECEIPT');
+  await expect(popup.locator('pre')).toContainText('ZIP extractor');
   await popup.close();
 });
 
@@ -68,7 +68,7 @@ test('blocked IndexedDB does not block the prepared downloads', async ({ browser
   await expect(page.locator('#status')).toContainText('both downloads are ready');
   const downloadPromise = page.waitForEvent('download');
   await page.locator('#download-zip').click();
-  expect((await downloadPromise).suggestedFilename()).toBe('confidential-handoff.zip');
+  expect((await downloadPromise).suggestedFilename()).toBe('shared-file-receipt.zip');
   expect(errors).toEqual([]);
   await context.close();
 });
@@ -79,7 +79,7 @@ test('invalid or secret-bearing imports are rejected without poisoning the log',
   await page.locator('#import-records').setInputFiles({ name: 'poison.json', mimeType: 'application/json', buffer: Buffer.from(poisoned) });
   await expect(page.locator('#status')).toContainText('No entries were imported');
   await page.reload();
-  await expect(page.locator('#record-list')).toContainText('No handoffs logged yet');
+  await expect(page.locator('#record-list')).toContainText('No file receipts logged yet');
   const rows = await page.evaluate(async () => new Promise<unknown[]>((resolve, reject) => {
     const request = indexedDB.open('confidential-file-handoff', 1);
     request.onerror = () => reject(request.error);
@@ -143,7 +143,24 @@ test('@claim:demo-sandbox sample demo is ready in an isolated namespace and rese
   expect(await page.evaluate(() => localStorage.getItem('sb_license:confidential-file-handoff'))).toBeNull();
   await page.locator('#reset-demo').click();
   await expect(page.locator('#file-label')).toHaveText('2 sample files selected');
-  await expect(page.locator('#record-list')).toContainText('No handoffs logged yet');
+  await expect(page.locator('#record-list')).toContainText('No file receipts logged yet');
+});
+
+test('@regression:neutral-product-qa-copy uses shared file receipt wording on every public route', async ({ page }) => {
+  const routes = ['/', '/demo', '/privacy/', '/terms/', '/offline.html', '/404.html'];
+  for (const route of routes) {
+    await page.goto(route);
+    const text = await page.locator('body').innerText();
+    expect(text).toMatch(/shared file receipt/i);
+    expect(text).not.toMatch(/\b(confidential|sensitive|encrypted|password|security|threat)\b/i);
+  }
+  await page.goto('/demo');
+  await page.locator('#prepare').click();
+  const downloadPromise = page.waitForEvent('download');
+  await page.locator('#download-sheet').click();
+  const receipt = await readFile(await (await downloadPromise).path() as string, 'utf8');
+  expect(receipt).toMatch(/SHARED FILE RECEIPT/);
+  expect(receipt).not.toMatch(/\b(confidential|sensitive|encrypted|password|security|threat)\b/i);
 });
 
 test('@claim:encrypted-local-zip demo creates a decryptable AES ZIP without uploads', async ({ page }) => {
@@ -224,7 +241,7 @@ test('@claim:demo-exit-discard leaving the demo clears its checklist before real
   await expect(page.locator('#record-list')).toContainText('Maya');
   await Promise.all([page.waitForURL('/'), page.locator('#start-real').click()]);
   await page.goto('/demo');
-  await expect(page.locator('#record-list')).toContainText('No handoffs logged yet');
+  await expect(page.locator('#record-list')).toContainText('No file receipts logged yet');
 });
 
 test('@claim:checklist-secrets-excluded only the checklist fields are retained and the password stays out of the sheet', async ({ page }) => {
