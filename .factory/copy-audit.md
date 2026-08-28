@@ -4,8 +4,8 @@
 
 | Text | Words |
 | --- | ---: |
-| Create a shared file receipt. | 5 |
-| For people sending files to someone who may need simple steps for opening them. | 14 |
+| Create a protected ZIP with opening instructions. | 7 |
+| For people sending personal files to recipients who need clear, separate steps for opening them. | 15 |
 | No upload. | 2 |
 | Works offline after first visit. | 5 |
 | Free core tools; Pro is US $9 once. | 8 |
@@ -14,11 +14,11 @@
 
 | Concept | Product word |
 | --- | --- |
-| ZIP archive | ZIP file |
-| Sender instructions | file receipt |
+| ZIP archive | protected ZIP |
+| Sender instructions | recipient instructions |
 | Delivery methods | routes |
-| Local history | receipt list |
-| Access code | access phrase |
+| Local history | handoff log |
+| Access code | ZIP access phrase |
 | Sample environment | demo |
 
 All landing and legal sentences are 22 words or fewer. Banned marketing words are not used.

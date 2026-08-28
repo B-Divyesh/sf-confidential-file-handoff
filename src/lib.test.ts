@@ -13,9 +13,13 @@ describe('handoff helpers', () => {
     expect(sheet).toContain('Hello Maya');
     expect(sheet).toContain('Email attachment');
     expect(sheet).toContain('Text message');
+    expect(sheet).toContain('shared-file-receipt.zip');
+    expect(sheet).toContain('protected AES-256 ZIP');
+    expect(sheet).toContain('ZIP access phrase will arrive separately');
     expect(sheet).toContain('Do not expect it in the same message as the ZIP');
     expect(sheet).toContain('AES-256 ZIP-compatible extractor');
     expect(sheet).toContain('does not do: hide file names');
+    expect(sheet).not.toMatch(/\ban prepared ZIP folder\b|\ba access phrase\b|\ban ZIP extractor\b/i);
   });
 
   it('only accepts safe minimal records for import', () => {

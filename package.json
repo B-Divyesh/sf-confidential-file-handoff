@@ -19,6 +19,18 @@
   "dependencies": {
     "@zip.js/zip.js": "^2.8.22"
   },
+  "overrides": {
+    "@azure/abort-controller": "2.1.2",
+    "@azure/core-auth": "1.9.0",
+    "@azure/core-client": "1.9.4",
+    "@azure/core-paging": "1.6.2",
+    "@azure/core-rest-pipeline": "1.20.0",
+    "@azure/core-tracing": "1.2.0",
+    "@azure/core-util": "1.12.0",
+    "@azure/core-xml": "1.4.5",
+    "@azure/logger": "1.2.0",
+    "@typespec/ts-http-runtime": "0.2.0"
+  },
   "devDependencies": {
     "@eslint/js": "^9.35.0",
     "@playwright/test": "1.58.2",

@@ -1,13 +1,13 @@
-# Shared File Receipt
+# Confidential File Handoff
 
-Shared File Receipt is a local-first PWA for people sharing files with someone who should not need technical help. It creates a ZIP in the browser, writes a plain-language file receipt, and keeps a small local acknowledgement list.
+Confidential File Handoff is a local-first PWA for people who need to send personal files to someone who may need simple opening steps. It creates a protected ZIP in the browser, writes recipient opening instructions, and keeps a small local acknowledgement list.
 
 Live: https://confidential-file-handoff.sociobot.in
 
 ## What it does
 
-- Creates `shared-file-receipt.zip` on the sender’s device; the app does not upload selected files or the ZIP access phrase.
-- Produces a file receipt that separates the ZIP delivery route from the access-phrase route.
+- Creates the protected `shared-file-receipt.zip` on the sender’s device; the app does not upload selected files or the ZIP access phrase.
+- Produces recipient opening instructions that name the downloaded ZIP and separate its delivery route from the access-phrase route.
 - Keeps an IndexedDB list with only recipient name, dates, and the selected routes—not file names, file contents, or access phrases.
 - Lets the sender export/import that list as JSON.
 - Works after install and offline once the app shell has been opened.

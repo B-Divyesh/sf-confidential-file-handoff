@@ -1,6 +1,8 @@
 'use strict';
 
 const assert = require('node:assert/strict');
+const { readFileSync } = require('node:fs');
+const { resolve } = require('node:path');
 const { afterEach, test } = require('node:test');
 const verify = require('./index.cjs');
 
@@ -85,5 +87,19 @@ test('fails closed when durable rate-limit storage is unavailable', async () => 
   } finally {
     if (originalStorage === undefined) delete process.env.AzureWebJobsStorage; else process.env.AzureWebJobsStorage = originalStorage;
     if (originalRateStorage === undefined) delete process.env.RATE_LIMIT_STORAGE_CONNECTION_STRING; else process.env.RATE_LIMIT_STORAGE_CONNECTION_STRING = originalRateStorage;
+  }
+});
+
+test('@regression:managed-function-runtime keeps the Azure Table dependency Node 18 compatible', () => {
+  // Azure Static Web Apps runs this managed function on Node 18. A caret range
+  // previously resolved Azure transitive packages requiring Node 22, which made
+  // the function fail during module loading and returned an empty HTTP 500.
+  const lock = JSON.parse(readFileSync(resolve(process.cwd(), 'api', 'package-lock.json'), 'utf8'));
+  const runtimePackages = Object.entries(lock.packages)
+    .filter(([path]) => path.includes('node_modules/@azure/data-tables'));
+  assert.ok(runtimePackages.length > 1, 'the API lock must pin the table client and its runtime dependencies');
+  for (const [path, manifest] of runtimePackages) {
+    const range = manifest.engines?.node || '';
+    assert.ok(!/>=2[0-9]/.test(range), `${path} requires an unsupported Node version: ${range}`);
   }
 });

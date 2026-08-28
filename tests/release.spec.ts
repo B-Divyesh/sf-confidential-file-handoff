@@ -50,8 +50,9 @@ test('print contains the recipient sheet instead of a blank page', async ({ page
   const popupPromise = page.waitForEvent('popup');
   await page.locator('#print-sheet').click();
   const popup = await popupPromise;
-  await expect(popup.locator('pre')).toContainText('SHARED FILE RECEIPT');
-  await expect(popup.locator('pre')).toContainText('ZIP extractor');
+  await expect(popup.locator('pre')).toContainText('CONFIDENTIAL FILE HANDOFF');
+  await expect(popup.locator('pre')).toContainText('shared-file-receipt.zip');
+  await expect(popup.locator('pre')).toContainText('AES-256 ZIP-compatible extractor');
   await popup.close();
 });
 
@@ -146,21 +147,21 @@ test('@claim:demo-sandbox sample demo is ready in an isolated namespace and rese
   await expect(page.locator('#record-list')).toContainText('No file receipts logged yet');
 });
 
-test('@regression:neutral-product-qa-copy uses shared file receipt wording on every public route', async ({ page }) => {
-  const routes = ['/', '/demo', '/privacy/', '/terms/', '/offline.html', '/404.html'];
-  for (const route of routes) {
-    await page.goto(route);
-    const text = await page.locator('body').innerText();
-    expect(text).toMatch(/shared file receipt/i);
-    expect(text).not.toMatch(/\b(confidential|sensitive|encrypted|password|security|threat)\b/i);
-  }
+test('@regression:recipient-instructions name the downloaded ZIP and the landing page states the core job', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Create a protected ZIP with opening instructions.');
   await page.goto('/demo');
   await page.locator('#prepare').click();
+  const zipDownload = page.waitForEvent('download');
+  await page.locator('#download-zip').click();
+  expect((await zipDownload).suggestedFilename()).toBe('shared-file-receipt.zip');
   const downloadPromise = page.waitForEvent('download');
   await page.locator('#download-sheet').click();
   const receipt = await readFile(await (await downloadPromise).path() as string, 'utf8');
-  expect(receipt).toMatch(/SHARED FILE RECEIPT/);
-  expect(receipt).not.toMatch(/\b(confidential|sensitive|encrypted|password|security|threat)\b/i);
+  expect(receipt).toContain('shared-file-receipt.zip');
+  expect(receipt).toContain('protected AES-256 ZIP');
+  expect(receipt).toContain('ZIP access phrase will arrive separately by Text message');
+  expect(receipt).not.toMatch(/\ban prepared ZIP folder\b|\ba access phrase\b|\ban ZIP extractor\b/i);
 });
 
 test('@claim:encrypted-local-zip demo creates a decryptable AES ZIP without uploads', async ({ page }) => {
