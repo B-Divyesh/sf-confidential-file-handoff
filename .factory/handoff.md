@@ -1,35 +1,40 @@
-# Confidential File Handoff — builder handoff
+# Confidential File Handoff — independent verification handoff
 
-## Delivered
+## Status: FAIL
 
-- A Vite + TypeScript static PWA in `dist/` with manifest, 192/512 maskable icons, a versioned hand-written service worker, offline fallback, update notification, and `start_url` version query.
-- A complete local handoff wizard: multi-file selection, 18-character secure password generator, sender acknowledgement, AES-encrypted ZIP creation via `@zip.js/zip.js`, downloadable ZIP, downloadable/printable plain-language recipient sheet, and manual sent/opened checklist.
-- A local IndexedDB handoff log that intentionally excludes files, file names, and passwords; it has JSON export/import and specific confirmed deletion.
-- Plain-language threat model and error/offline states. The app does not claim E2EE, hosting, identity verification, or compliance certification.
-- One-time Pro route using the required Sociobot checkout and license verification contract. Free encryption, handoff sheet, safety guidance, and data export remain ungated; Pro adds a local custom note to the recipient sheet.
-- `/privacy/` and `/terms/`, MIT license, refreshed README, and a documented dithered/halftone visual system in `.factory/design.md`.
+Candidate `18b5f7f00430940296c30acb8203230c0f60f2ab` was independently verified on 2026-08-28 against <https://confidential-file-handoff.sociobot.in/>. The deployment is live and its HTML, JS, CSS, and service-worker hashes match the candidate. It is not release-ready.
 
-## Verification performed
+Full evidence and reproductions are in [`.factory/verification.md`](verification.md).
 
-Run from a clean install:
+## Blocking findings
+
+- The persisted acknowledgement checklist cannot be updated after reload/tab return; pending records become read-only except for deletion.
+- The advertised Pro checkout returns HTTP 404.
+- A 120-request concurrent license-verification burst returned 120 HTTP 200 responses: no 429 and no `Retry-After` (observed threshold greater than 120 or absent).
+- PWA updates are stale: the unchanged `confidential-handoff-v1` worker/cache and stable `assets/app.js` kept serving parent JS after an online candidate update/reload.
+- The update toast is visible on every load and axe reports its dark-theme Refresh button at 1.57:1 contrast (serious).
+- IndexedDB failure blocks delivery of an already-created ZIP despite the UI saying handoff creation still works.
+- Import accepts/stores arbitrary extra fields such as `password`/`fileName`, and an invalid date permanently breaks the log view.
+- Print opens a blank tab; duplicate filenames abort multi-file creation.
+
+Medium/low findings also cover ZIP client interoperability and plaintext filename disclosure, clipped file-picker focus, sub-44px mobile controls, missing CSP/framing/Permissions-Policy headers, offline policy-route behavior, short asset caching, missing exact Pro price, and absent `.factory/brief.json`.
+
+## Passing evidence
+
+- Clean `npm ci`, `npm test` (3/3), TypeScript check, exact Vite production build, and npm audit passed.
+- Live/candidate SHA-256 hashes match for `index.html`, `assets/app.js`, `assets/style.css`, and `sw.js`.
+- Desktop and 390px mobile happy paths created and downloaded AES-encrypted ZIPs and correct recipient sheets without console/page errors or file/password upload.
+- Offline root reload and offline ZIP creation passed; Chromium reported no manifest/installability errors.
+- Lighthouse mobile: Performance 93, Accessibility 100 (light), Best Practices 100, SEO 100; LCP 2.1s, CLS 0. Payload budgets pass.
+- Light-theme axe, privacy, and terms scans had zero violations; reduced-motion behavior passed.
+
+## Verification commands
 
 ```sh
-npm install
+npm ci
 npm test
 npm run build
+npm exec vite -- preview --host 127.0.0.1 --port 4173
 ```
 
-Results on 2026-08-28:
-
-- `npm test`: 3 unit tests passed.
-- `npm run build`: passed; generated `dist/index.html` and static deploy assets. Main JS is 160.25 KB uncompressed / 68.49 KB gzip, CSS is 11.50 KB uncompressed / 3.51 KB gzip, and the hero WebP is 152 KB—within the static budgets.
-- Playwright Chromium at 390×844: selected a test file, completed the form by keyboard-operable controls, created the encrypted ZIP, downloaded `confidential-handoff.zip`, and observed no console errors. `zipinfo -v` reports the output entry as encrypted with ZIP compression method 99 (WinZip AES).
-- Offline: after the initial visit and reload, `context.setOffline(true)` still loaded the application shell with its title, main landmark, and one H1.
-- axe-core browser run: 0 violations (41 passing checks).
-- Lighthouse mobile run against the built static server: performance 94, accessibility 100, CLS 0. The local container’s Chromium target crashed during Lighthouse’s final screenshot collection, but the generated JSON report and category scores were written successfully. Measured LCP was 2.96 s on that constrained local run; the hero has since been reduced to 152 KB (the score result was from the earlier 194 KB variant), so production should be rechecked on deployed hosting.
-
-## Known gaps / next steps
-
-- The ZIP creator is exercised end-to-end in Chromium, but an external recipient-device interoperability pass (Windows Explorer, macOS Archive Utility, Android) is the sensible final product QA before a public announcement.
-- The service worker intentionally uses a small fixed app-shell list because Vite output file names are configured stable for offline precache. Bump `VERSION` in `public/sw.js` with a release that changes the shell.
-- The current flat static server cannot set immutable cache headers; deployment should configure long-lived caching for `/assets/*` and the image/icons, while serving `sw.js` with revalidation.
+No product code was modified. Native Windows/macOS ZIP interoperability, a successful paid purchase, and field INP remain unverified; checkout being unavailable prevents the paid-path test.
