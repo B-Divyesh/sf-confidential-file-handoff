@@ -63,12 +63,12 @@ test('rejects a missing token without calling the upstream API', async () => {
   assert.equal(called, false);
 });
 
-test('uses the stable platform client identity instead of a rotating edge address', async () => {
+test('uses a stable browser identity instead of a rotating edge address', async () => {
   verify._setRateLimiterForTests(verify._createMemoryRateLimiterForTests());
   global.fetch = async () => new Response(JSON.stringify({ valid: false, reason: 'invalid', expires_at: null }), { status: 200 });
   const context = { log: { warn() {} } };
-  const first = await verify(context, { headers: { 'x-forwarded-for': 'edge-a, client-a' }, query: { license: 'test-token-a' } });
-  const second = await verify(context, { headers: { 'x-forwarded-for': 'edge-b, client-a' }, query: { license: 'test-token-b' } });
+  const first = await verify(context, { headers: { 'x-forwarded-for': 'edge-a, client-a', 'user-agent': 'qa-browser', 'accept-language': 'en' }, query: { license: 'test-token-a' } });
+  const second = await verify(context, { headers: { 'x-forwarded-for': 'edge-b, client-a', 'user-agent': 'qa-browser', 'accept-language': 'en' }, query: { license: 'test-token-b' } });
   assert.equal(first.headers['X-RateLimit-Remaining'], '19');
   assert.equal(second.headers['X-RateLimit-Remaining'], '18');
 });

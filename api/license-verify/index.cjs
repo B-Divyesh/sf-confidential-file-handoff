@@ -35,7 +35,7 @@ function isConflict(error) { return status(error) === 409 || status(error) === 4
 /**
  * Azure Table Storage is shared by every managed-function instance. Updates use
  * entity ETags, so concurrent instances cannot each admit request 21. Rows hold
- * only a one-way client-address digest, a count, and a one-minute expiry.
+ * only a one-way browser-identity digest, a count, and a one-minute expiry.
  */
 class AzureTableRateLimiter {
   constructor(connectionString, client) {
@@ -96,12 +96,15 @@ function getRateLimiter() {
 
 function clientKey(req) {
   const header = (name) => req.headers?.[name] || req.headers?.get?.(name) || '';
-  // Static Web Apps may prepend a different edge address for each request.
-  // Prefer its client-IP headers; when they are absent the terminal forwarded
-  // address is the original client on this proxy chain.
+  const principal = header('x-ms-client-principal-id');
+  // Static Web Apps may prepend a different edge address for each request and
+  // does not always forward an origin address. An authenticated principal is
+  // best; otherwise a browser-profile fingerprint is stable across those edge
+  // hops without retaining the raw value (rowKey hashes it before storage).
+  const browserProfile = ['user-agent', 'accept-language', 'sec-ch-ua', 'sec-ch-ua-mobile', 'sec-ch-ua-platform'].map(header).filter(Boolean).join('|');
   const platformClient = header('x-azure-clientip') || header('x-client-ip') || header('client-ip');
   const forwarded = String(header('x-forwarded-for')).split(',').map((value) => value.trim()).filter(Boolean);
-  return String(platformClient).trim() || forwarded.at(-1) || 'unknown-client';
+  return String(principal).trim() || browserProfile || String(platformClient).trim() || forwarded.at(-1) || 'unknown-client';
 }
 
 module.exports = async function licenseVerify(context, req) {
