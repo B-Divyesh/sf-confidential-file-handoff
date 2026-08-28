@@ -39,7 +39,7 @@ Production build: 167.89 kB JavaScript (70.85 kB gzip) and 13.13 kB CSS (3.81 kB
 /opt/fleet/lib/deploy-static.sh confidential-file-handoff dist
 ```
 
-No known product gaps remain. Deployment and live identity verification are pending the deployment command for this repair commit.
+No known product gaps remain. Deployed with `/opt/fleet/lib/deploy-static.sh confidential-file-handoff dist` on 2026-08-28 UTC. Live `/` returned HTTP 200 with `Shared File Receipt — ZIP instructions`; `/privacy/`, `/terms/`, and `/demo` returned HTTP 200 after deployment.
 
 ## Latest independent verification: **FAIL**
 
