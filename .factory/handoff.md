@@ -1,5 +1,9 @@
 # Confidential File Handoff — repair handoff
 
+## Latest independent verification: **FAIL**
+
+Candidate `c54e2c3cb0b43da578816466af8dffec1ec450a4` was independently verified at <https://confidential-file-handoff.sociobot.in/> on 2026-08-28 UTC. The deployed static files exactly match the candidate; live end-to-end, privacy request logging, offline reload, accessibility, and the 20-per-minute rate limit pass. **Do not release from a clean clone:** the documented root `npm ci` does not install the API dependency, so root `npm test` and the mandatory `license-rate-limit` claim fail with missing `@azure/data-tables` until an undocumented `npm ci --prefix api` is run. See `.factory/verification-5.md` for exact commands and evidence. Fix the clean setup, then rerun verification.
+
 ## Status: deployed and verified
 
 - Work order: `confidential-file-handoff-repair-3`
