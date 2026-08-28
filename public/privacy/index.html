@@ -1,13 +1,118 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="color-scheme" content="light dark">
-    <title>Privacy — Shared File Receipt</title>
-    <style>
-      :root{color-scheme:light dark;--paper:#f5f0e3;--ink:#1d292d;--teal:#006f70}body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.55 system-ui,sans-serif}.wrap{max-width:46rem;margin:auto;padding:4rem 1.5rem}h1,h2{font-family:Georgia,serif;line-height:1.1}h1{font-size:clamp(2.5rem,7vw,4rem);color:var(--teal)}h2{margin-top:2rem}a{color:var(--teal);display:inline-flex;align-items:center;min-height:44px}a:focus-visible{outline:3px solid #b16b00;outline-offset:3px}@media(prefers-color-scheme:dark){:root{--paper:#172226;--ink:#f8f1e2;--teal:#72d3c8}}
-    </style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#006f70" />
+    <meta
+      name="description"
+      content="How Confidential File Handoff handles files, handoff logs, demo data, and Pro licenses."
+    />
+    <link
+      rel="canonical"
+      href="https://confidential-file-handoff.sociobot.in/privacy/"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Privacy — Confidential File Handoff" />
+    <meta
+      property="og:description"
+      content="How Confidential File Handoff handles files, handoff logs, demo data, and Pro licenses."
+    />
+    <meta
+      property="og:url"
+      content="https://confidential-file-handoff.sociobot.in/privacy/"
+    />
+    <meta
+      property="og:image"
+      content="https://confidential-file-handoff.sociobot.in/social-preview.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Privacy — Confidential File Handoff" />
+    <meta
+      name="twitter:description"
+      content="How Confidential File Handoff handles files, handoff logs, demo data, and Pro licenses."
+    />
+    <meta
+      name="twitter:image"
+      content="https://confidential-file-handoff.sociobot.in/social-preview.png"
+    />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/icons/apple-touch-icon.png"
+    />
+    <link rel="stylesheet" href="/site.css" />
+    <script defer src="/route-nav.js"></script>
+    <title>Privacy — Confidential File Handoff</title>
   </head>
-  <body><a class="skip-link" href="#main">Skip to privacy</a><header class="wrap"><a href="/">Shared File Receipt</a><nav aria-label="Site"><a href="/demo">Demo</a> · <a href="/terms/">Terms</a></nav></header><main id="main" class="wrap"><h1>Privacy</h1><p>This app works on your device. It does not upload selected files, ZIP access phrases, file names, or file receipts.</p><h2>What stays on your device</h2><p>Your browser creates the ZIP locally. It may save a local receipt list in IndexedDB.</p><p>The list stores a recipient name, creation date, two routes, and optional sent and opened dates. It never stores files, file names, or access phrases.</p><p>ZIP entry names remain visible before an access phrase is entered. Rename file names before adding them if needed.</p><h2>Your choices</h2><p>You can export, import, or delete the local receipt list. Clearing this site’s browser storage removes it.</p><p>The demo uses separate browser storage. Reset demo clears its sample list. Start for real clears it before leaving demo mode.</p><h2>Pro licenses</h2><p>A license token stays in this browser. Sociobot checks it at most once a day while online.</p><p>The same-origin license gateway keeps a browser-identity digest for one minute. It also keeps a count for that minute. The digest limits license checks. It does not keep the license response.</p><p>Sociobot/Dodo is the merchant of record. This app has no advertising trackers or third-party analytics.</p><h2>Contact</h2><p>Contact the operator through Sociobot for privacy questions. Do not send files in support requests.</p></main><footer class="wrap"><p>Built for clear file sharing. <a href="https://paramfactory.com">Built by Param Factory</a></p></footer></body>
+  <body>
+    <a class="skip-link" href="#main">Skip to privacy</a>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Confidential File Handoff home"
+        ><span class="brand-mark" aria-hidden="true">↗</span>
+        Confidential<br />File Handoff</a
+      >
+      <nav aria-label="Site">
+        <a href="/?demo=1">Demo</a><a href="/terms/">Terms</a
+        ><a href="/">Builder</a>
+      </nav>
+    </header>
+    <main id="main">
+      <p class="eyebrow">Your data</p>
+      <h1 tabindex="-1">Privacy</h1>
+      <p>Your browser creates the ZIP and handoff sheet on this device.</p>
+      <h2>What stays on your device</h2>
+      <p>
+        The app does not upload selected files, access phrases, file names, or
+        handoff sheets.
+      </p>
+      <p>
+        The handoff log stores a recipient, creation date, two routes, and
+        optional sent and opened dates.
+      </p>
+      <p>
+        It does not store files, file names, or access phrases. ZIP entry names
+        remain visible until you rename them.
+      </p>
+      <h2>Your choices</h2>
+      <p>
+        You can export, import, or delete the handoff log. Clearing this site’s
+        browser storage removes it.
+      </p>
+      <p>
+        The demo uses a separate browser database. Reset demo clears that
+        database. Start for real clears it before leaving.
+      </p>
+      <h2>Pro licenses</h2>
+      <p>
+        A license token stays in this browser. A verified result is reused for
+        less than 24 hours.
+      </p>
+      <p>
+        The license gateway keeps only a one-way browser digest, a request
+        count, and a one-minute expiry.
+      </p>
+      <p>
+        License responses are not cached by the gateway. Sociobot/Dodo handles
+        payment. This app has no advertising trackers or third-party analytics.
+      </p>
+      <h2>Contact</h2>
+      <p>
+        Contact the operator through Sociobot for privacy questions. Do not send
+        files in support requests.
+      </p>
+    </main>
+    <footer>
+      <p>
+        Create protected ZIP handoffs on your device.
+        <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a>
+      </p>
+      <p>Built by Param Factory · version 1.0.0</p>
+    </footer>
+    <div id="route-status" class="sr-only" aria-live="polite"></div>
+  </body>
 </html>

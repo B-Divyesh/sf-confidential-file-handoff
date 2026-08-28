@@ -1,34 +1,37 @@
 # Confidential File Handoff
 
-Confidential File Handoff is a local-first PWA for people who need to send personal files to someone who may need simple opening steps. It creates a protected ZIP in the browser, writes recipient opening instructions, and keeps a small local acknowledgement list.
+Create a protected ZIP for people who need clear opening steps. The browser also creates a handoff sheet and keeps a small local handoff log.
 
 Live: https://confidential-file-handoff.sociobot.in
 
 ## What it does
 
-- Creates the protected `shared-file-receipt.zip` on the sender’s device; the app does not upload selected files or the ZIP access phrase.
-- Produces recipient opening instructions that name the downloaded ZIP and separate its delivery route from the access-phrase route.
-- Keeps an IndexedDB list with only recipient name, dates, and the selected routes—not file names, file contents, or access phrases.
-- Lets the sender export/import that list as JSON.
-- Works after install and offline once the app shell has been opened.
+- Creates the AES-256 protected `confidential-file-handoff.zip` in the browser.
+- Creates a handoff sheet that names the ZIP and explains both delivery routes.
+- Stores only the recipient, dates, and selected routes in IndexedDB.
+- Exports the handoff log as JSON and imports valid exports.
+- Works offline after the first visit.
+
+The app does not upload selected files, access phrases, file names, or handoff sheets. ZIP entry names remain visible before the access phrase is entered. Rename sensitive file names before adding them.
 
 ## Try the demo
 
-Choose **Try it with sample data** or open [/demo](/demo). The demo has two fictional files, uses the `demo:confidential-file-handoff` IndexedDB namespace, and never reads or writes real file-receipt data. Use **Reset demo** to clear its list; **Start for real** clears it before leaving demo mode. See [.factory/demo.md](.factory/demo.md) for the exact sandbox behavior.
+Choose **Try it with sample data** or open [/?demo=1](https://confidential-file-handoff.sociobot.in/?demo=1). The first view shows two fictional files, Maya, both routes, and the create action.
 
-Every reliance claim has a sandbox regression test in [.factory/claims.json](.factory/claims.json). Run each listed command from a clean checkout.
+The demo uses the separate `demo:confidential-file-handoff` IndexedDB database. It never reads or changes the real handoff log. **Reset demo** clears demo activity and restores the sample. **Start for real** clears demo activity before leaving.
 
-This is a file-receipt aid, not identity verification, a transfer service, scanning tool, or professional certification. Read the in-app limits before using it for an important exchange.
+See [.factory/demo.md](.factory/demo.md) for the sandbox details. Every reliance claim has one observable test in [.factory/claims.json](.factory/claims.json).
 
-ZIP entry names are visible without the access phrase, and built-in ZIP tools can differ. Rename file names before adding them if needed. The generated file receipt recommends a recovery path.
+## Limits
 
-## Develop and verify
+This tool does not transfer files, verify recipients, scan files, or provide professional certification. It cannot hide ZIP entry names or secure a compromised device. The handoff sheet explains what to do when a built-in ZIP tool is incompatible.
 
-Requires Node 20+.
+## Run and verify
+
+Requires Node 20 or newer.
 
 ```sh
 npm ci
-npm run dev
 npm test
 npm run lint
 npm run typecheck
@@ -36,20 +39,28 @@ npm run build
 npm run test:browser
 ```
 
-`npm run build` writes the static deployable site to `dist/`, with `dist/index.html` at its root.
+`npm run build` writes the static site to `dist/`, with `dist/index.html` at its root. Run each command in `.factory/claims.json` from a clean checkout to verify every public claim.
 
-## Privacy and paid unlock
+## Privacy and Pro
 
-See [/privacy/](/privacy/) and [/terms/](/terms/). The free core workflow is complete. A US $9 one-time Pro license, sold by Sociobot/Dodo, adds a personal note to the recipient instructions. The product never embeds a payment provider. License checks use the same-origin `/api/license/verify` managed function. It forwards to Sociobot. It allows at most 20 checks per client in 60 seconds. It does not cache responses. The counter uses a one-way browser-identity digest, count, and one-minute expiry. Browser verdicts last at most one day. They apply only to the exact verified token.
+Read [Privacy](/privacy/) and [Terms](/terms/). Creating the ZIP, handoff sheet, handoff log, and exports remains free.
+
+Pro costs US $9 once and adds a personal note to the handoff sheet. Payment happens on the hosted [Sociobot checkout](https://api.sociobot.in/api/v1/products/confidential-file-handoff/checkout), not inside this app.
+
+License checks use the same-origin `/api/license/verify` function. It forwards a check to Sociobot and sends `Cache-Control: no-store`. It permits 20 checks per browser in 60 seconds. Its counter stores only a one-way browser digest, count, and one-minute expiry. A browser verdict is reused for less than 24 hours and only for its exact token.
 
 ## Deploy
 
-This remains an Azure Static Web Apps deployment. `dist/` is the static root and `api/` is the managed same-origin license gateway. The factory deployment command is:
+This is an Azure Static Web Apps deployment. The static root is `dist/`; `api/` contains the same-origin license gateway.
 
 ```sh
 /opt/fleet/lib/deploy-static.sh confidential-file-handoff dist
 ```
 
-## Design and source artwork
+## Design and artwork
 
-The visual system and original-art provenance are documented in [.factory/design.md](.factory/design.md). The artwork is generated specifically for this product; no runtime third-party fonts, scripts, analytics, or icon libraries are used.
+The dithered security-print visual system and asset provenance are in [.factory/design.md](.factory/design.md). The original artwork was generated for this product. Core use loads no third-party fonts, scripts, analytics, or icon libraries.
+
+## License
+
+[MIT](LICENSE)

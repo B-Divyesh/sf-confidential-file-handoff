@@ -14,7 +14,29 @@ const LICENSE_CACHE_KEY = `sb_license_verdict:${SLUG}`;
 const isDemo =
   location.pathname === "/demo" ||
   new URLSearchParams(location.search).get("demo") === "1";
-if (isDemo) document.title = "Demo — Protected ZIP instructions";
+if (isDemo) {
+  document.title = "Demo — Confidential File Handoff";
+  document.querySelector<HTMLMetaElement>('meta[name="description"]')!.content =
+    "Create a sample protected ZIP and handoff sheet in a separate demo space.";
+  document.querySelector<HTMLLinkElement>('link[rel="canonical"]')!.href =
+    "https://confidential-file-handoff.sociobot.in/demo";
+  document.querySelector<HTMLMetaElement>(
+    'meta[property="og:title"]',
+  )!.content = "Demo — Confidential File Handoff";
+  document.querySelector<HTMLMetaElement>(
+    'meta[property="og:description"]',
+  )!.content =
+    "Create a sample protected ZIP and handoff sheet in a separate demo space.";
+  document.querySelector<HTMLMetaElement>('meta[property="og:url"]')!.content =
+    "https://confidential-file-handoff.sociobot.in/demo";
+  document.querySelector<HTMLMetaElement>(
+    'meta[name="twitter:title"]',
+  )!.content = "Demo — Confidential File Handoff";
+  document.querySelector<HTMLMetaElement>(
+    'meta[name="twitter:description"]',
+  )!.content =
+    "Create a sample protected ZIP and handoff sheet in a separate demo space.";
+}
 const store = new HandoffStore(isDemo ? `demo:${SLUG}` : undefined);
 let activeRecord: HandoffRecord | undefined;
 // A token is not an entitlement. Only a verdict previously verified for this
@@ -23,39 +45,32 @@ let proUnlocked = false;
 
 const app = document.querySelector<HTMLDivElement>("#app")!;
 app.innerHTML = `
-  <header class="site-header"><a class="brand" href="/" aria-label="Confidential File Handoff home"><span class="brand-mark" aria-hidden="true">↗</span> Confidential<br>File Handoff</a><nav aria-label="Site"><a href="/demo">Demo</a><a href="#how-it-works">How it works</a><a href="#records">Handoff log</a><a href="/privacy/">Privacy</a></nav></header>
+  <header class="site-header"><a class="brand" href="/" aria-label="Confidential File Handoff home"><span class="brand-mark" aria-hidden="true">↗</span> Confidential<br>File Handoff</a><nav aria-label="Site"><a href="/?demo=1">Demo</a><a href="/#how-it-works">How it works</a><a href="/#records">Handoff log</a><a href="/privacy/">Privacy</a></nav></header>
   <main id="main">
-    <aside id="demo-banner" class="demo-banner" ${isDemo ? "" : "hidden"} aria-label="Demo mode"><strong>Demo — sample data, nothing is saved.</strong><span>Sample files and receipt list use a separate browser space.</span><button class="link-button" id="reset-demo" type="button">Reset demo</button><a class="link-button" id="start-real" href="/">Start for real</a></aside>
-    <section class="hero" aria-labelledby="page-title">
-      <div class="hero-copy"><p class="eyebrow">A clear process for sharing files</p><h1 id="page-title">Create a protected ZIP with opening instructions.</h1><p class="lede">For people sending personal files to recipients who need clear, separate steps for opening them.</p><div class="hero-actions"><a class="button button-primary" href="/demo">Try it with sample data <span aria-hidden="true">→</span></a><a class="button button-secondary" href="#builder">Create a protected ZIP <span aria-hidden="true">↓</span></a></div><p class="microcopy">No upload. Works offline after first visit. Free core tools; Pro is US $9 once.</p></div>
-      <figure class="hero-art"><img src="/print-desk.webp" width="900" height="600" alt="" fetchpriority="high" decoding="async"><figcaption>Original generated print illustration. This app does not send your files anywhere.</figcaption></figure>
-    </section>
+    <aside id="demo-banner" class="demo-banner" ${isDemo ? "" : "hidden"} aria-label="Demo mode"><strong>Demo — sample data, nothing is saved.</strong><span>This demo uses a separate browser space.</span><button class="link-button" id="reset-demo" type="button">Reset demo</button><a class="link-button" id="start-real" href="/">Start for real</a></aside>
+    ${isDemo ? `<section class="demo-workspace" aria-labelledby="page-title"><p class="eyebrow">Sample handoff ready</p><h1 id="page-title" tabindex="-1">Create Maya’s sample handoff.</h1><p class="demo-intro">Review the filled details, then create the protected ZIP and handoff sheet.</p><div class="sample-paper"><div><p class="sample-label">Files</p><ul id="demo-file-list"><li>project-update.txt</li><li>meeting-notes.txt</li></ul></div><dl><div><dt>Recipient</dt><dd>Maya</dd></div><div><dt>Protected ZIP route</dt><dd>Email attachment</dd></div><div><dt>Access phrase route</dt><dd>Text message</dd></div></dl><button class="button button-primary" id="create-demo" type="button">Create sample handoff <span aria-hidden="true">→</span></button><button class="link-button" id="show-demo-details" type="button">Change sample details</button></div></section>` : `<section class="hero" aria-labelledby="page-title"><div class="hero-copy"><p class="eyebrow">Protected ZIP handoff</p><h1 id="page-title" tabindex="-1">Create a protected ZIP with opening instructions.</h1><p class="lede">For people sending personal files to recipients who need clear, separate steps for opening them.</p><div class="hero-actions"><a class="button button-primary" href="/?demo=1">Try it with sample data <span aria-hidden="true">→</span></a><a class="button button-secondary" href="#builder">Create a protected ZIP <span aria-hidden="true">↓</span></a></div><ul class="hero-facts" aria-label="Product facts"><li>No file upload</li><li>Works offline after first visit</li><li>Core tools are free; Pro costs US $9 once</li></ul></div><figure class="hero-art"><img src="/print-desk.webp" width="900" height="600" alt="" fetchpriority="high" decoding="async"><figcaption>Original generated print illustration.</figcaption></figure></section><section class="truth-strip" id="how-it-works" aria-label="How it works"><p><strong>1. Pack the files</strong><span>Choose files and a ZIP access phrase.</span></p><p><strong>2. Pick two routes</strong><span>Send the protected ZIP and access phrase separately.</span></p><p><strong>3. Check the handoff</strong><span>Record when they confirm opening it.</span></p></section>`}
 
-    <section class="truth-strip" id="how-it-works" aria-label="What this tool does">
-      <p><strong>1. Pack the files</strong><span>Choose files and a ZIP access phrase.</span></p><p><strong>2. Pick two routes</strong><span>Send the protected ZIP and access phrase separately.</span></p><p><strong>3. Check the handoff</strong><span>Record when they confirm opening it.</span></p>
-    </section>
-
-    <section class="builder" id="builder" aria-labelledby="builder-title">
-      <div class="section-intro"><p class="eyebrow">Protected ZIP builder</p><h2 id="builder-title">Prepare the ZIP and recipient instructions</h2><p>Everything happens in your browser. The ZIP access phrase is never stored or included in the recipient sheet.</p></div>
+    <section class="builder" id="builder" aria-labelledby="builder-title" ${isDemo ? "hidden" : ""}>
+      <div class="section-intro"><p class="eyebrow">Protected ZIP builder</p><h2 id="builder-title" tabindex="-1">Prepare the ZIP and handoff sheet</h2><p>Your browser creates both downloads. It never saves the ZIP access phrase or puts it in the handoff sheet.</p></div>
       <div id="status" class="status" role="status" aria-live="polite"></div>
       <form id="handoff-form" novalidate>
-        <fieldset class="step"><legend><span>01</span> Add the files</legend><p class="step-help">They are read only to create a ZIP. File names are not saved in the receipt list, but someone can see names by listing the ZIP before entering its access phrase. Rename file names first if needed.</p><input id="files" name="files" type="file" multiple required aria-describedby="file-error"><label class="file-picker" for="files"><span class="file-icon" aria-hidden="true">+</span><strong id="file-label">Choose files</strong><small>PDFs, photos, scans, or any files from this device</small></label><p class="form-error" id="file-error"></p></fieldset>
-        <fieldset class="step"><legend><span>02</span> Write the two routes</legend><div class="field-grid"><div><label for="recipient">Recipient’s first name</label><input id="recipient" name="recipient" autocomplete="name" maxlength="80" required aria-describedby="recipient-error"><p class="form-error" id="recipient-error"></p></div><div><label for="delivery">Where will the protected ZIP go?</label><select id="delivery" name="delivery"><option>Email attachment</option><option>A link you share yourself</option><option>Hand-delivered USB drive</option><option>Another app or service</option></select></div><div><label for="password-channel">Where will the ZIP access phrase go?</label><select id="password-channel" name="password-channel"><option>Text message</option><option>A phone call</option><option>In person</option><option>A second email address</option><option>Another separate channel</option></select></div></div><p class="separation-note"><span aria-hidden="true">↔</span> Send the protected ZIP and its access phrase by different channels. This app cannot make that choice for you.</p><div class="pro-note"><label for="custom-note">Optional personal note <span class="pro-tag">Pro</span></label><textarea id="custom-note" maxlength="280" disabled aria-describedby="custom-note-help"></textarea><p id="custom-note-help" class="microcopy">Unlock Pro to add a short note to the recipient sheet.</p></div></fieldset>
+        <fieldset class="step"><legend><span>01</span> Add the files</legend><p class="step-help">They are read only to create a ZIP. The handoff log does not save file names. ZIP file names remain visible before the access phrase is entered.</p><input id="files" name="files" type="file" multiple required aria-describedby="file-error"><label class="file-picker" for="files"><span class="file-icon" aria-hidden="true">+</span><strong id="file-label">Choose files</strong><small>PDFs, photos, scans, or any files from this device</small></label><p class="form-error" id="file-error"></p></fieldset>
+        <fieldset class="step"><legend><span>02</span> Write the two routes</legend><div class="field-grid"><div><label for="recipient">Recipient’s first name</label><input id="recipient" name="recipient" autocomplete="name" maxlength="80" required aria-describedby="recipient-error"><p class="form-error" id="recipient-error"></p></div><div><label for="delivery">Where will the protected ZIP go?</label><select id="delivery" name="delivery"><option>Email attachment</option><option>A link you share yourself</option><option>Hand-delivered USB drive</option><option>Another app or service</option></select></div><div><label for="password-channel">Where will the ZIP access phrase go?</label><select id="password-channel" name="password-channel"><option>Text message</option><option>A phone call</option><option>In person</option><option>A second email address</option><option>Another separate channel</option></select></div></div><p class="separation-note"><span aria-hidden="true">↔</span> Send the protected ZIP and its access phrase by different channels. This app cannot make that choice for you.</p><div class="pro-note"><label for="custom-note">Optional personal note <span class="pro-tag">Pro</span></label><textarea id="custom-note" maxlength="280" disabled aria-describedby="custom-note-help"></textarea><p id="custom-note-help" class="microcopy">Buy Pro to add a short note to the handoff sheet.</p></div></fieldset>
         <fieldset class="step"><legend><span>03</span> Set an access phrase</legend><p class="step-help">Use a new ZIP access phrase. Save it in your notes or write it down before you close this page.</p><div class="password-row"><div><label for="password">ZIP access phrase</label><input id="password" name="password" type="text" autocapitalize="off" autocomplete="new-password" spellcheck="false" minlength="12" required aria-describedby="password-error"><p class="form-error" id="password-error"></p></div><button id="generate-password" class="button button-secondary" type="button">Make an access phrase</button></div><label class="checkline"><input id="password-saved" type="checkbox" required aria-describedby="saved-error"><span>I have saved this access phrase. It will not be saved by this app.</span></label><p class="form-error" id="saved-error"></p></fieldset>
-        <button id="prepare" class="button button-primary button-large" type="submit">Create protected ZIP and recipient sheet <span aria-hidden="true">→</span></button>
+        <button id="prepare" class="button button-primary button-large" type="submit">Create protected ZIP and handoff sheet <span aria-hidden="true">→</span></button>
       </form>
     </section>
 
     <section id="kit" class="handoff-kit" hidden aria-labelledby="kit-title" tabindex="-1"><div class="kit-stamp" aria-hidden="true">READY<br>TO HAND OFF</div><p class="eyebrow">Your packet is prepared</p><h2 id="kit-title">Send these two things separately.</h2><div class="kit-grid"><article><p class="kit-number">A</p><h3>Encrypted ZIP</h3><p>Send this file using your selected delivery route. It requires the password to open.</p><button class="button button-primary" id="download-zip" type="button">Download encrypted ZIP</button></article><article><p class="kit-number">B</p><h3>Recipient handoff sheet</h3><p>Send or print this with the ZIP. It tells <span id="kit-recipient">your recipient</span where to expect the password.</p><button class="button button-secondary" id="download-sheet" type="button">Download handoff sheet</button><button class="link-button" id="print-sheet" type="button">Print the sheet</button></article></div><div class="acknowledgement"><h3>Manual acknowledgement</h3><p>Keep only the facts you need—never the files, password, or file names.</p><label class="checkline"><input id="sent-check" type="checkbox"><span>I sent the encrypted ZIP and handoff sheet.</span></label><label class="checkline"><input id="ack-check" type="checkbox"><span>The recipient confirmed they opened the files.</span></label></div><button class="link-button" id="start-again" type="button">Prepare another handoff</button></section>
 
     <p class="compatibility-note">Recipient note: some built-in ZIP tools do not support AES-256. The handoff sheet names compatible extractors and tells the recipient what to do if opening fails.</p>
-    <section class="records" id="records" aria-labelledby="records-title"><div class="section-intro"><p class="eyebrow">Local handoff log</p><h2 id="records-title">Acknowledge, then forget.</h2><p>This browser keeps a small checklist—recipient name, dates, and delivery routes only. No file names or passwords.</p></div><div class="record-actions"><button class="button button-secondary" id="export-records" type="button">Export handoff log</button><label class="button button-secondary import-button">Import log<input id="import-records" type="file" accept="application/json"></label></div><div id="record-list" aria-live="polite"></div></section>
+    <section class="records" id="records" aria-labelledby="records-title"><div class="section-intro"><p class="eyebrow">Local handoff log</p><h2 id="records-title">Review the local handoff log</h2><p>This browser keeps only the recipient, dates, and delivery routes. It does not keep files, file names, or access phrases.</p></div><div class="record-actions"><button class="button button-secondary" id="export-records" type="button">Export handoff log</button><label class="button button-secondary import-button">Import handoff log<input id="import-records" type="file" accept="application/json"></label></div><div id="record-list" aria-live="polite"></div></section>
 
-    <section class="plain-truth" id="privacy-note" aria-labelledby="truth-title"><p class="eyebrow">Plain threat model</p><h2 id="truth-title">Useful protection, stated plainly.</h2><div><p><strong>This helps with:</strong> keeping file contents unavailable to someone who gets the ZIP but not its separate password.</p><p><strong>This does not hide file names:</strong> ZIP entry names remain readable without the password. Rename files first if their names reveal sensitive information.</p><p><strong>This cannot:</strong> verify the recipient, protect a compromised phone or computer, prevent a recipient from forwarding files, scan files for malware, or guarantee the safety of any channel you choose.</p></div><p>For urgent or regulated needs, follow the requirements of your professional or organisation. This tool makes no medical, legal, or compliance guarantee.</p></section>
+    <section class="plain-truth" id="privacy-note" aria-labelledby="truth-title"><p class="eyebrow">Limits</p><h2 id="truth-title">What the protected ZIP does and does not protect</h2><div><p><strong>It protects file contents:</strong> someone needs the separate access phrase to read them.</p><p><strong>It does not hide file names:</strong> ZIP entry names remain readable. Rename files first if their names reveal sensitive information.</p><p><strong>It has limits:</strong> It cannot verify your recipient or secure a compromised device. It cannot stop forwarding, scan for malware, or guarantee a delivery channel.</p></div><p>For urgent or regulated needs, follow your professional or organisation’s requirements. This tool makes no medical, legal, or compliance guarantee.</p></section>
 
-    <section class="pro" aria-labelledby="pro-title"><div><p class="eyebrow">One-time Pro unlock</p><h2 id="pro-title">Add a personal note to the handoff sheet.</h2><p>Pro is a one-time US $9 purchase that unlocks a custom note on recipient sheets. The encrypted ZIP, handoff sheet, local log, and exports stay free.</p></div><div id="license-panel"><a class="button button-primary" href="https://api.sociobot.in/api/v1/products/confidential-file-handoff/checkout">Buy Pro once — US $9</a><label for="license-input">Already bought it? Paste your license</label><div class="license-row"><input id="license-input" type="text" autocomplete="off" aria-describedby="license-status"><button id="restore-license" class="button button-secondary" type="button">Restore purchase</button></div><p id="license-status" class="microcopy" aria-live="polite"></p></div></section>
+    <section class="pro" aria-labelledby="pro-title"><div><p class="eyebrow">One-time Pro purchase</p><h2 id="pro-title">Add a personal note to the handoff sheet.</h2><p>Pro costs US $9 once and adds a personal note. Creating the ZIP, handoff sheet, handoff log, and exports remains free.</p></div><div id="license-panel"><a class="button button-primary" href="https://api.sociobot.in/api/v1/products/confidential-file-handoff/checkout">Buy Pro once — US $9</a><label for="license-input">Already bought it? Paste your license</label><div class="license-row"><input id="license-input" type="text" autocomplete="off" aria-describedby="license-status"><button id="restore-license" class="button button-secondary" type="button">Restore Pro license</button></div><p id="license-status" class="microcopy" aria-live="polite"></p></div></section>
   </main>
-  <footer><p>Built for careful, human-scale handoffs. <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></p><p>Artwork is original AI-generated product artwork. <a href="https://paramfactory.com">Built by Param Factory</a> · build ${__BUILD_ID__}</p></footer><div id="update-toast" class="update-toast" hidden role="status" aria-live="polite"><span>A newer version is ready.</span><button id="reload-app" class="button button-secondary" type="button">Refresh</button></div>`;
+  <footer><p>Create protected ZIP handoffs on your device. <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></p><p>Original AI-generated product artwork. Built by Param Factory · build ${__BUILD_ID__}</p></footer><div id="update-toast" class="update-toast" hidden role="status" aria-live="polite"><span>A newer version is ready.</span><button id="reload-app" class="button button-secondary" type="button">Refresh</button></div>`;
 
 const form = document.querySelector<HTMLFormElement>("#handoff-form")!;
 const filesInput = document.querySelector<HTMLInputElement>("#files")!;
@@ -65,6 +80,81 @@ const savedInput = document.querySelector<HTMLInputElement>("#password-saved")!;
 const status = document.querySelector<HTMLDivElement>("#status")!;
 let preparedZip: Blob | undefined;
 let preparedSheet = "";
+
+document.querySelector("#kit > .eyebrow")!.textContent = "Handoff ready";
+document.querySelector(".kit-grid article:first-child h3")!.textContent =
+  "Protected ZIP";
+document.querySelector("#download-zip")!.textContent = "Download protected ZIP";
+document.querySelector(".kit-grid article:nth-child(2) h3")!.textContent =
+  "Handoff sheet";
+document.querySelector("#records-title")!.textContent =
+  "Review the local handoff log";
+document.querySelector("#records .section-intro > p:last-child")!.textContent =
+  "This browser keeps only the recipient, dates, and delivery routes. It does not keep files, file names, or access phrases.";
+document.querySelector(".import-button")!.childNodes[0].textContent =
+  "Import handoff log";
+document.querySelector("#truth-title")!.textContent =
+  "What the protected ZIP does and does not protect";
+document.querySelector(".plain-truth > .eyebrow")!.textContent = "Limits";
+document.querySelector(".plain-truth > div")!.innerHTML =
+  "<p><strong>It protects file contents:</strong> someone needs the separate access phrase to read them.</p><p><strong>It does not hide file names:</strong> ZIP entry names remain readable. Rename files first if their names reveal sensitive information.</p><p><strong>It has limits:</strong> It cannot verify your recipient or secure a compromised device. It cannot stop forwarding, scan for malware, or guarantee a delivery channel.</p>";
+document.querySelector(".plain-truth > p:last-child")!.textContent =
+  "For urgent or regulated needs, follow your professional or organisation’s requirements. This tool makes no medical, legal, or compliance guarantee.";
+document.querySelector(".pro > div:first-child > .eyebrow")!.textContent =
+  "One-time Pro purchase";
+document.querySelector(".pro > div:first-child > p:last-child")!.textContent =
+  "Pro costs US $9 once and adds a personal note. Creating the ZIP, handoff sheet, handoff log, and exports remains free.";
+document.querySelector("#restore-license")!.textContent = "Restore Pro license";
+document.querySelector("#builder .section-intro > p:last-child")!.textContent =
+  "Your browser creates both downloads. It never saves the ZIP access phrase or puts it in the handoff sheet.";
+document.querySelector("#custom-note-help")!.textContent =
+  "Buy Pro to add a short note to the handoff sheet.";
+document.querySelector(
+  ".kit-grid article:first-child > p:not(.kit-number)",
+)!.textContent =
+  "Send this file using your selected delivery route. It requires the access phrase to open.";
+const kitRecipient = document.querySelector("#kit-recipient")!;
+kitRecipient.previousSibling!.textContent =
+  "Send or print this with the ZIP. It tells ";
+kitRecipient.nextSibling!.textContent = " where to expect the access phrase.";
+document.querySelector(".acknowledgement > p")!.textContent =
+  "Keep only the recipient, routes, and dates.";
+document.querySelector("#sent-check + span")!.textContent =
+  "I sent the protected ZIP and handoff sheet.";
+document.querySelector("footer")!.innerHTML =
+  `<p>Create protected ZIP handoffs on your device. <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></p><p>Original AI-generated product artwork. Built by Param Factory · build ${__BUILD_ID__}</p>`;
+const routeStatus = document.createElement("div");
+routeStatus.id = "route-status";
+routeStatus.className = "sr-only";
+routeStatus.setAttribute("aria-live", "polite");
+document.body.append(routeStatus);
+
+function focusRouteHeading() {
+  const heading = document.querySelector<HTMLElement>("h1");
+  if (!heading) return;
+  heading.tabIndex = -1;
+  heading.focus({ preventScroll: true });
+  routeStatus.textContent = document.title;
+}
+
+document.addEventListener("click", (event) => {
+  const link = (event.target as Element).closest<HTMLAnchorElement>("a[href]");
+  if (!link || link.origin !== location.origin || link.hash) return;
+  sessionStorage.setItem("handoff:focus-route", "1");
+});
+window.addEventListener("pageshow", (event) => {
+  const navigation = performance.getEntriesByType("navigation")[0] as
+    | PerformanceNavigationTiming
+    | undefined;
+  if (
+    sessionStorage.getItem("handoff:focus-route") === "1" ||
+    event.persisted ||
+    navigation?.type === "back_forward"
+  ) {
+    sessionStorage.removeItem("handoff:focus-route");
+    requestAnimationFrame(focusRouteHeading);
+  }
+});
 
 function setStatus(
   message = "",
@@ -95,18 +185,14 @@ function displayDate(value?: string) {
 function loadDemoSample() {
   const transfer = new DataTransfer();
   transfer.items.add(
-    new File(
-      ["Project update sample — fictional."],
-      "project-update.txt",
-      { type: "text/plain" },
-    ),
+    new File(["Project update sample — fictional."], "project-update.txt", {
+      type: "text/plain",
+    }),
   );
   transfer.items.add(
-    new File(
-      ["Meeting notes sample — fictional."],
-      "meeting-notes.txt",
-      { type: "text/plain" },
-    ),
+    new File(["Meeting notes sample — fictional."], "meeting-notes.txt", {
+      type: "text/plain",
+    }),
   );
   filesInput.files = transfer.files;
   document.querySelector("#file-label")!.textContent =
@@ -119,7 +205,7 @@ function loadDemoSample() {
   document.querySelector<HTMLSelectElement>("#password-channel")!.value =
     "Text message";
   setStatus(
-    "Sample protected ZIP is ready to review. Create it to see the ZIP, recipient instructions, and local handoff log.",
+    "Sample details restored. Create the handoff when you are ready.",
     "success",
   );
 }
@@ -169,7 +255,10 @@ form.addEventListener("submit", async (event) => {
     valid = false;
   }
   if (!valid) {
-    setStatus("Fix the marked fields before preparing the protected ZIP.", "error");
+    setStatus(
+      "Fix the marked fields before preparing the protected ZIP.",
+      "error",
+    );
     const firstInvalid = !filesInput.files?.length
       ? filesInput
       : !recipientInput.value.trim()
@@ -224,7 +313,7 @@ form.addEventListener("submit", async (event) => {
     try {
       await store.put(activeRecord);
       setStatus(
-        "Protected ZIP created. Download it and the recipient instructions below.",
+        "Protected ZIP created. Download it and the handoff sheet below.",
         "success",
       );
       await renderRecords();
@@ -243,7 +332,7 @@ form.addEventListener("submit", async (event) => {
   } finally {
     submit.disabled = false;
     submit.innerHTML =
-      'Create protected ZIP and recipient sheet <span aria-hidden="true">→</span>';
+      'Create protected ZIP and handoff sheet <span aria-hidden="true">→</span>';
   }
 });
 
@@ -251,14 +340,14 @@ document
   .querySelector("#download-zip")!
   .addEventListener(
     "click",
-    () => preparedZip && download(preparedZip, "shared-file-receipt.zip"),
+    () => preparedZip && download(preparedZip, "confidential-file-handoff.zip"),
   );
 document
   .querySelector("#download-sheet")!
   .addEventListener("click", () =>
     download(
       new Blob([preparedSheet], { type: "text/plain;charset=utf-8" }),
-      "shared-file-receipt.txt",
+      "confidential-file-handoff.txt",
     ),
   );
 document.querySelector("#print-sheet")!.addEventListener("click", () => {
@@ -276,7 +365,7 @@ document.querySelector("#print-sheet")!.addEventListener("click", () => {
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
   popup.document.write(
-    `<!doctype html><html lang="en"><head><title>Shared file receipt</title><meta name="viewport" content="width=device-width"><style>body{margin:0;padding:2rem;color:#111;background:#fff}pre{white-space:pre-wrap;font:16px/1.5 system-ui,sans-serif;max-width:48rem;margin:auto}@media print{body{padding:0}}</style></head><body><main><pre>${safeSheet}</pre></main></body></html>`,
+    `<!doctype html><html lang="en"><head><title>Confidential File Handoff sheet</title><meta name="viewport" content="width=device-width"><style>body{margin:0;padding:2rem;color:#111;background:#fff}pre{white-space:pre-wrap;font:16px/1.5 system-ui,sans-serif;max-width:48rem;margin:auto}@media print{body{padding:0}}</style></head><body><main><pre>${safeSheet}</pre></main></body></html>`,
   );
   popup.document.close();
   popup.focus();
@@ -290,6 +379,12 @@ document.querySelector("#start-again")!.addEventListener("click", () => {
   preparedSheet = "";
   activeRecord = undefined;
   document.querySelector<HTMLElement>("#kit")!.hidden = true;
+  if (isDemo) {
+    document.querySelector<HTMLElement>("#builder")!.hidden = true;
+    loadDemoSample();
+    document.querySelector<HTMLElement>("#page-title")!.focus();
+    return;
+  }
   form.scrollIntoView({
     behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
       ? "auto"
@@ -331,7 +426,7 @@ async function renderRecords() {
     target.replaceChildren();
     if (!records.length) {
       target.innerHTML =
-        '<p class="empty-state">No file receipts logged yet. Preparing a ZIP creates a local list here.</p>';
+        '<p class="empty-state">No handoffs logged yet. Creating a protected ZIP adds one here.</p>';
       return;
     }
     const list = document.createElement("ul");
@@ -342,7 +437,7 @@ async function renderRecords() {
       const name = document.createElement("strong");
       const summary = document.createElement("span");
       name.textContent = record.recipient;
-      summary.textContent = `Prepared ${displayDate(record.createdAt)} · ZIP: ${record.delivery} · Password: ${record.passwordChannel}`;
+      summary.textContent = `Prepared ${displayDate(record.createdAt)} · ZIP: ${record.delivery} · Access phrase: ${record.passwordChannel}`;
       details.append(name, summary);
       const states = document.createElement("div");
       states.className = "record-state";
@@ -405,7 +500,7 @@ async function renderRecords() {
     target.append(list);
   } catch {
     target.innerHTML =
-      '<p class="empty-state">Your browser did not open the local receipt list. You can still create and download a file receipt.</p>';
+      '<p class="empty-state">Your browser did not open the local handoff log. You can still create and download both files.</p>';
   }
 }
 
@@ -428,7 +523,7 @@ document
           ],
           { type: "application/json" },
         ),
-        "shared-file-receipt-list.json",
+        "confidential-file-handoff-log.json",
       );
     } catch {
       setStatus("The log could not be exported in this browser.", "error");
@@ -445,12 +540,12 @@ document
       const count = await store.replace(data.handoffs);
       await renderRecords();
       setStatus(
-        `${count} ${count === 1 ? "file receipt entry was" : "file receipt entries were"} imported.`,
+        `${count} ${count === 1 ? "handoff was" : "handoffs were"} imported.`,
         "success",
       );
     } catch {
       setStatus(
-        "That file is not a valid file-receipt export. No entries were imported.",
+        "That file is not a valid handoff-log export. No entries were imported.",
         "error",
       );
     } finally {
@@ -470,8 +565,8 @@ function setProUnlocked(unlocked: boolean) {
   const help = document.querySelector<HTMLElement>("#custom-note-help")!;
   note.disabled = !unlocked;
   help.textContent = unlocked
-    ? "Pro is active. This note is included only in the downloaded recipient sheet."
-    : "Unlock Pro to add a short note to the file receipt.";
+    ? "Pro is active. This note is included only in the downloaded handoff sheet."
+    : "Buy Pro to add a short note to the handoff sheet.";
 }
 function cachedLicenseVerdict(): {
   checkedAt: number;
@@ -597,10 +692,25 @@ window.addEventListener("online", () =>
 );
 if (isDemo) {
   loadDemoSample();
+  document.querySelector("#create-demo")!.addEventListener("click", () => {
+    form.requestSubmit();
+  });
+  document
+    .querySelector("#show-demo-details")!
+    .addEventListener("click", () => {
+      document.querySelector<HTMLElement>("#builder")!.hidden = false;
+      document.querySelector<HTMLElement>("#builder-title")!.focus();
+    });
   document.querySelector("#reset-demo")!.addEventListener("click", async () => {
     await store.clear();
+    preparedZip = undefined;
+    preparedSheet = "";
+    activeRecord = undefined;
+    document.querySelector<HTMLElement>("#kit")!.hidden = true;
+    document.querySelector<HTMLElement>("#builder")!.hidden = true;
     loadDemoSample();
     await renderRecords();
+    document.querySelector<HTMLElement>("#page-title")!.focus();
   });
   document
     .querySelector<HTMLAnchorElement>("#start-real")!

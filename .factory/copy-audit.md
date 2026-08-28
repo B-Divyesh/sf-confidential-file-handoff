@@ -1,24 +1,86 @@
 # Copy audit
 
-## Landing first screen
+Audited against the rendered landing page and demo on 2026-08-28. Word counts treat contractions and hyphenated terms as one word. No sentence exceeds 22 words. No banned marketing word appears in rendered copy.
 
-| Text | Words |
-| --- | ---: |
-| Create a protected ZIP with opening instructions. | 7 |
-| For people sending personal files to recipients who need clear, separate steps for opening them. | 15 |
-| No upload. | 2 |
-| Works offline after first visit. | 5 |
-| Free core tools; Pro is US $9 once. | 8 |
+## First screen
+
+| Text                                                                                             | Words |
+| ------------------------------------------------------------------------------------------------ | ----: |
+| Create a protected ZIP with opening instructions.                                                |     7 |
+| For people sending personal files to recipients who need clear, separate steps for opening them. |    15 |
+| No file upload.                                                                                  |     3 |
+| Works offline after first visit.                                                                 |     5 |
+| Core tools are free; Pro costs US $9 once.                                                       |     9 |
+| Original generated print illustration.                                                           |     4 |
+
+## How it works and builder
+
+| Sentence                                                              | Words |
+| --------------------------------------------------------------------- | ----: |
+| Choose files and a ZIP access phrase.                                 |     7 |
+| Send the protected ZIP and access phrase separately.                  |     8 |
+| Record when they confirm opening it.                                  |     6 |
+| Your browser creates both downloads.                                  |     5 |
+| It never saves the ZIP access phrase or puts it in the handoff sheet. |    14 |
+| They are read only to create a ZIP.                                   |     8 |
+| The handoff log does not save file names.                             |     8 |
+| ZIP file names remain visible before the access phrase is entered.    |    11 |
+| Send the protected ZIP and its access phrase by different channels.   |    11 |
+| This app cannot make that choice for you.                             |     8 |
+| Buy Pro to add a short note to the handoff sheet.                     |    11 |
+| Use a new ZIP access phrase.                                          |     6 |
+| Save it in your notes or write it down before you close this page.    |    14 |
+| I have saved this access phrase.                                      |     6 |
+| It will not be saved by this app.                                     |     8 |
+
+## Result, log, limits, and Pro
+
+| Sentence                                                                                           | Words |
+| -------------------------------------------------------------------------------------------------- | ----: |
+| Send these two things separately.                                                                  |     5 |
+| Send this file using your selected delivery route.                                                 |     8 |
+| It requires the access phrase to open.                                                             |     7 |
+| Send or print this with the ZIP.                                                                   |     7 |
+| It tells your recipient where to expect the access phrase.                                         |    10 |
+| Keep only the recipient, routes, and dates.                                                        |     7 |
+| I sent the protected ZIP and handoff sheet.                                                        |     8 |
+| The recipient confirmed they opened the files.                                                     |     7 |
+| Recipient note: some built-in ZIP tools do not support AES-256.                                    |    10 |
+| The handoff sheet names compatible extractors and tells the recipient what to do if opening fails. |    16 |
+| This browser keeps only the recipient, dates, and delivery routes.                                 |    11 |
+| It does not keep files, file names, or access phrases.                                             |    10 |
+| No handoffs logged yet.                                                                            |     4 |
+| Creating a protected ZIP adds one here.                                                            |     7 |
+| It protects file contents: someone needs the separate access phrase to read them.                  |    13 |
+| ZIP entry names remain readable.                                                                   |     5 |
+| Rename files first if their names reveal sensitive information.                                    |     9 |
+| It cannot verify your recipient or secure a compromised device.                                    |    10 |
+| It cannot stop forwarding, scan for malware, or guarantee a delivery channel.                      |    12 |
+| For urgent or regulated needs, follow your professional or organisation’s requirements.            |    11 |
+| This tool makes no medical, legal, or compliance guarantee.                                        |     9 |
+| Pro costs US $9 once and adds a personal note.                                                     |    10 |
+| Creating the ZIP, handoff sheet, handoff log, and exports remains free.                            |    11 |
+| Create protected ZIP handoffs on your device.                                                      |     7 |
+| Original AI-generated product artwork.                                                             |     4 |
+
+## Demo first screen
+
+| Sentence                                                                    | Words |
+| --------------------------------------------------------------------------- | ----: |
+| Demo — sample data, nothing is saved.                                       |     6 |
+| This demo uses a separate browser space.                                    |     7 |
+| Create Maya’s sample handoff.                                               |     4 |
+| Review the filled details, then create the protected ZIP and handoff sheet. |    12 |
 
 ## Terminology
 
-| Concept | Product word |
-| --- | --- |
-| ZIP archive | protected ZIP |
-| Sender instructions | recipient instructions |
-| Delivery methods | routes |
-| Local history | handoff log |
-| Access code | ZIP access phrase |
-| Sample environment | demo |
+| Concept            | Product word      |
+| ------------------ | ----------------- |
+| ZIP archive        | protected ZIP     |
+| Recipient document | handoff sheet     |
+| Delivery methods   | routes            |
+| Local history      | handoff log       |
+| Access code        | ZIP access phrase |
+| Sample environment | demo              |
 
-All landing and legal sentences are 22 words or fewer. Banned marketing words are not used.
+Developer-only names such as IndexedDB and PWA remain in README and factory documentation, not first-screen copy.

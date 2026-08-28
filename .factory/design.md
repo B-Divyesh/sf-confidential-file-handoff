@@ -6,16 +6,16 @@
 
 ## Tokens
 
-| Role | Light ink value | Dark ink value |
-| --- | --- | --- |
-| Ground | `#f5f0e3` (warm paper) | `#172226` (night ink) |
-| Surface | `#fffdf6` | `#203238` |
-| Primary text | `#1d292d` | `#f8f1e2` |
-| Muted text | `#536064` | `#c2ccc7` |
-| Teal seal / accent | `#006f70` | `#72d3c8` |
-| Vermilion warning | `#a9331b` | `#ff9f88` |
-| Gold marker | `#b16b00` | `#ffd073` |
-| Success | `#17643d` | `#91e0af` |
+| Role               | Light ink value        | Dark ink value        |
+| ------------------ | ---------------------- | --------------------- |
+| Ground             | `#f5f0e3` (warm paper) | `#172226` (night ink) |
+| Surface            | `#fffdf6`              | `#203238`             |
+| Primary text       | `#1d292d`              | `#f8f1e2`             |
+| Muted text         | `#536064`              | `#c2ccc7`             |
+| Teal seal / accent | `#006f70`              | `#72d3c8`             |
+| Vermilion warning  | `#a9331b`              | `#ff9f88`             |
+| Gold marker        | `#b16b00`              | `#ffd073`             |
+| Success            | `#17643d`              | `#91e0af`             |
 
 The site honours the system colour preference; both treatments retain paper/ink contrast. Teal and vermilion are never the only state signal.
 
@@ -31,6 +31,6 @@ The update notice uses fixed night-ink and warm-paper colors in both system them
 
 ## Original asset plan and provenance
 
-One original hero illustration, `assets/src/print-desk.png`, depicts a closed document packet, a key card, and a phone as simplified editorial objects on stippled paper. It is decorative (`alt=""`) because the adjacent copy states the procedure. Prompt sheet: **subject** a confidential document handoff desk; **world/materials** two-colour risograph security print, heavy halftone dots and grainy recycled paper; **light** flat studio print lighting; **lens** straight-on editorial still life; **palette** warm ivory, deep blue-green, rust vermilion, restrained mustard; **negative list** readable text, watermark, logos, brands, people, medical/legal symbols, photorealism. Generated with the factory Azure image model on 2026-08-28; original product artwork, no third-party licence needed. The reviewed final is converted to WebP for delivery; source prompt is retained alongside it.
+One original hero illustration, `assets/src/print-desk.png`, depicts a closed document packet, a key card, and a phone as simplified editorial objects on stippled paper. It is decorative (`alt=""`) because the adjacent copy states the procedure. Prompt sheet: **subject** a confidential document handoff desk; **world/materials** two-colour risograph security print, heavy halftone dots and grainy recycled paper; **light** flat studio print lighting; **lens** straight-on editorial still life; **palette** warm ivory, deep blue-green, rust vermilion, restrained mustard; **negative list** readable text, watermark, logos, brands, people, medical/legal symbols, photorealism. Generated with the factory Azure image model on 2026-08-28; original product artwork, no third-party licence needed. The reviewed final is converted to WebP for delivery; source prompt is retained alongside it. `public/social-preview.png` is a 1200 × 630 crop of that same original artwork, created locally with ImageMagick on 2026-08-28. `public/icons/apple-touch-icon.png` is a local 180 px derivative of the authored product icon.
 
 The app also draws simple locks, checkmarks, and arrow marks as authored inline SVG/CSS shapes—no icon library.

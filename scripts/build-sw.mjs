@@ -17,7 +17,7 @@ const version = versionHash.digest('hex').slice(0, 16);
 const assets = files
   .map((file) => `/${relative(root, file).replaceAll('\\', '/')}`)
   .filter((path) => path.startsWith('/assets/') || path.startsWith('/icons/') || path === '/print-desk.webp');
-const shell = ['/', '/index.html', '/offline.html', '/privacy/', '/terms/', '/manifest.webmanifest', ...assets];
+const shell = ['/', '/index.html', '/demo', '/offline.html', '/privacy/', '/terms/', '/site.css', '/route-nav.js', '/manifest.webmanifest', ...assets];
 
 const source = `const CACHE_PREFIX = 'confidential-handoff-';
 const CACHE = 'confidential-handoff-${version}';

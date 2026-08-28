@@ -1,10 +1,156 @@
 [
-  {"id":"demo-sandbox","claim":"Try it with sample data without saving to real data","where":"landing action, /demo","test":"npm run test:browser -- --grep @claim:demo-sandbox","sandbox":"fresh browser context at /demo; verify sample files, separate demo state, and reset"},
-  {"id":"encrypted-local-zip","claim":"Creates a local ZIP on this device without uploading selected files","where":"landing, builder, README, terms","test":"npm run test:browser -- --grep @claim:encrypted-local-zip","sandbox":"fresh browser context at /demo; create and open the sample ZIP while recording requests"},
-  {"id":"offline-after-first-visit","claim":"Works offline after the first visit","where":"landing, README","test":"npm run test:browser -- --grep @claim:offline-after-first-visit","sandbox":"fresh browser context at /demo; wait for service worker, set offline, reload, and create packet"},
-  {"id":"local-log-export","claim":"Exports the local file receipt list","where":"receipt list, README","test":"npm run test:browser -- --grep @claim:local-log-export","sandbox":"fresh browser context at /demo; create a sample ZIP and inspect exported list fields"},
-  {"id":"checklist-secrets-excluded","claim":"The local list stores only receipt fields; it excludes files, file names, and ZIP access phrases, which are also excluded from the file receipt","where":"builder, list, privacy, README","test":"npm run test:browser -- --grep @claim:checklist-secrets-excluded","sandbox":"fresh browser context at /demo; create a ZIP, inspect the file receipt and IndexedDB row"},
-  {"id":"pro-note-entitlement","claim":"A personal note is included only after the exact Pro license token has been verified","where":"Pro panel, README","test":"npm run test:browser -- --grep @claim:pro-note-entitlement","sandbox":"fresh browser context; delay an invalid license response, create a ZIP, and inspect the downloaded receipt"},
-  {"id":"demo-exit-discard","claim":"Leaving demo mode discards its file receipt list","where":"demo banner, demo guide","test":"npm run test:browser -- --grep @claim:demo-exit-discard","sandbox":"fresh browser context; create a demo ZIP, choose Start for real, return to /demo, and inspect the empty list"},
-  {"id":"license-rate-limit","claim":"The license gateway allows at most 20 checks per client in 60 seconds","where":"README","test":"node --test --test-name-pattern='@claim:license-rate-limit' api/license-verify/index.test.cjs","sandbox":"shared rate-limit adapter; issue 21 sequential checks from one client and assert the 21st is 429 with Retry-After"}
+  {
+    "id": "demo-sandbox",
+    "claim": "One click opens a populated sample handoff without reading or changing real handoff data",
+    "where": "landing action, demo workspace, README, privacy",
+    "test": "npm run test:browser -- --grep @claim:demo-sandbox",
+    "sandbox": "390×844 fresh browser; seed a real record, enter /?demo=1, assert sample names and action are in view, then verify real and demo databases stay separate"
+  },
+  {
+    "id": "demo-reset",
+    "claim": "Reset demo clears demo activity and restores the shipped sample",
+    "where": "demo banner, README, privacy",
+    "test": "npm run test:browser -- --grep @claim:demo-reset",
+    "sandbox": "fresh demo; create a handoff, reset, assert empty demo log and restored sample fields"
+  },
+  {
+    "id": "demo-exit-discard",
+    "claim": "Start for real discards the demo handoff log before leaving",
+    "where": "demo banner, README, privacy",
+    "test": "npm run test:browser -- --grep @claim:demo-exit-discard",
+    "sandbox": "fresh demo; create a handoff, leave, return, and assert the demo log is empty"
+  },
+  {
+    "id": "encrypted-local-zip",
+    "claim": "Creates an AES-256 protected ZIP in the browser",
+    "where": "builder, handoff sheet, README",
+    "test": "npm run test:browser -- --grep @claim:encrypted-local-zip",
+    "sandbox": "fresh demo; create and download the ZIP, decrypt with the sample phrase, and assert both sample entries"
+  },
+  {
+    "id": "offline-after-first-visit",
+    "claim": "Works offline after the first visit",
+    "where": "first screen, README",
+    "test": "npm run test:browser -- --grep @claim:offline-after-first-visit",
+    "sandbox": "fresh demo; wait for service worker control, go offline, reload, and create the sample handoff"
+  },
+  {
+    "id": "handoff-sheet-routes",
+    "claim": "The handoff sheet names the downloaded ZIP and separates its route from the access-phrase route",
+    "where": "handoff sheet, README",
+    "test": "npm run test:browser -- --grep @claim:handoff-sheet-routes",
+    "sandbox": "fresh demo; create and download both outputs, assert matching ZIP name and both delivery instructions"
+  },
+  {
+    "id": "local-log-fields",
+    "claim": "The local handoff log stores only the recipient, dates, and selected routes",
+    "where": "handoff log, privacy, README",
+    "test": "npm run test:browser -- --grep @claim:local-log-fields",
+    "sandbox": "fresh demo; create a handoff and inspect every IndexedDB field and value"
+  },
+  {
+    "id": "local-log-export",
+    "claim": "Exports the handoff log as JSON",
+    "where": "handoff log, README",
+    "test": "npm run test:browser -- --grep @claim:local-log-export",
+    "sandbox": "fresh demo; create a handoff, export JSON, and inspect its row fields"
+  },
+  {
+    "id": "local-log-import",
+    "claim": "Imports a valid handoff-log JSON export",
+    "where": "handoff log, README",
+    "test": "npm run test:browser -- --grep @claim:local-log-import",
+    "sandbox": "fresh demo; export a created handoff, reset the database, import the file, and assert the restored row"
+  },
+  {
+    "id": "access-phrase-excluded",
+    "claim": "The ZIP access phrase is never stored or included in the handoff sheet",
+    "where": "builder, handoff log, privacy, README",
+    "test": "npm run test:browser -- --grep @claim:access-phrase-excluded",
+    "sandbox": "fresh demo; create a handoff, inspect the downloaded sheet and IndexedDB records for the known sample phrase"
+  },
+  {
+    "id": "no-sensitive-uploads",
+    "claim": "The core flow does not upload selected files, access phrases, file names, or handoff sheets",
+    "where": "first screen, privacy, README",
+    "test": "npm run test:browser -- --grep @claim:no-sensitive-uploads",
+    "sandbox": "fresh demo; record every request through creation, both downloads, and reset; assert only same-origin or blob requests"
+  },
+  {
+    "id": "free-core-tools",
+    "claim": "Creating the ZIP, handoff sheet, handoff log, and exports remains free",
+    "where": "first screen, Pro section, terms, README",
+    "test": "npm run test:browser -- --grep @claim:free-core-tools",
+    "sandbox": "fresh real mode without a license; create a handoff and assert both downloads, log, and export are enabled"
+  },
+  {
+    "id": "pro-price",
+    "claim": "Pro is offered for US $9 as a one-time purchase",
+    "where": "first screen, Pro section, terms, README",
+    "test": "npm run test:browser -- --grep @claim:pro-price",
+    "sandbox": "fresh real mode; assert the stated price and exact product checkout URL"
+  },
+  {
+    "id": "pro-note-entitlement",
+    "claim": "A verified Pro license adds a personal note to the downloaded handoff sheet",
+    "where": "Pro section, terms, README",
+    "test": "npm run test:browser -- --grep @claim:pro-note-entitlement",
+    "sandbox": "fresh real mode with a recorded valid verdict; add a note, create the handoff, and inspect the downloaded sheet"
+  },
+  {
+    "id": "payment-provider-boundary",
+    "claim": "Payment happens on the hosted Sociobot checkout, not inside the product",
+    "where": "Pro section, privacy, README",
+    "test": "npm run test:browser -- --grep @claim:payment-provider-boundary",
+    "sandbox": "fresh real mode; assert no embedded checkout or payment script and follow the Sociobot checkout to its hosted merchant page"
+  },
+  {
+    "id": "revoked-license-lock",
+    "claim": "A revoked license turns off the personal-note field",
+    "where": "terms",
+    "test": "npm run test:browser -- --grep @claim:revoked-license-lock",
+    "sandbox": "fresh real mode with a recorded revoked verdict; assert the field remains disabled"
+  },
+  {
+    "id": "license-cache-ttl",
+    "claim": "A browser license verdict is reused for less than 24 hours and refreshed at the boundary",
+    "where": "privacy, README",
+    "test": "npm run test:browser -- --grep @claim:license-cache-ttl",
+    "sandbox": "seed exact-token verdicts immediately below and above 86400000 ms; assert reuse and recheck behavior"
+  },
+  {
+    "id": "license-rate-limit",
+    "claim": "The license gateway allows at most 20 checks per browser in 60 seconds",
+    "where": "privacy, README",
+    "test": "node --test --test-name-pattern='@claim:license-rate-limit' api/license-verify/index.test.cjs",
+    "sandbox": "shared rate-limit adapter; issue 21 sequential checks from one browser and assert the 21st is 429"
+  },
+  {
+    "id": "license-response-no-store",
+    "claim": "The license gateway does not cache verification responses",
+    "where": "privacy, README",
+    "test": "node --test --test-name-pattern='@claim:license-response-no-store' api/license-verify/index.test.cjs",
+    "sandbox": "recorded upstream verdict; assert the gateway response sends Cache-Control: no-store"
+  },
+  {
+    "id": "license-rate-storage-minimal",
+    "claim": "The license rate counter stores only a one-way browser digest, count, and expiry",
+    "where": "privacy, README",
+    "test": "node --test --test-name-pattern='@claim:license-rate-storage-minimal' api/license-verify/index.test.cjs",
+    "sandbox": "in-memory table adapter; perform a check and inspect the exact persisted fields and hashed key"
+  },
+  {
+    "id": "no-third-party-runtime",
+    "claim": "Core use loads no third-party fonts, scripts, analytics, or icon libraries",
+    "where": "privacy, README",
+    "test": "npm run test:browser -- --grep @claim:no-third-party-runtime",
+    "sandbox": "fresh demo; record all runtime requests during creation and inspect loaded script and link elements"
+  },
+  {
+    "id": "artwork-provenance",
+    "claim": "The product artwork is original AI-generated artwork made for this product",
+    "where": "footer, design notes, README",
+    "test": "npm run test:browser -- --grep @claim:artwork-provenance",
+    "sandbox": "inspect the shipped source prompt record, model provenance, and exact 1200×630 derivative dimensions"
+  }
 ]
