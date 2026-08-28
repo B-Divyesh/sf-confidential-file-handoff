@@ -95,8 +95,13 @@ function getRateLimiter() {
 }
 
 function clientKey(req) {
-  const forwarded = req.headers?.['x-forwarded-for'] || req.headers?.get?.('x-forwarded-for') || '';
-  return String(forwarded).split(',')[0].trim() || 'unknown-client';
+  const header = (name) => req.headers?.[name] || req.headers?.get?.(name) || '';
+  // Static Web Apps may prepend a different edge address for each request.
+  // Prefer its client-IP headers; when they are absent the terminal forwarded
+  // address is the original client on this proxy chain.
+  const platformClient = header('x-azure-clientip') || header('x-client-ip') || header('client-ip');
+  const forwarded = String(header('x-forwarded-for')).split(',').map((value) => value.trim()).filter(Boolean);
+  return String(platformClient).trim() || forwarded.at(-1) || 'unknown-client';
 }
 
 module.exports = async function licenseVerify(context, req) {

@@ -63,6 +63,16 @@ test('rejects a missing token without calling the upstream API', async () => {
   assert.equal(called, false);
 });
 
+test('uses the stable platform client identity instead of a rotating edge address', async () => {
+  verify._setRateLimiterForTests(verify._createMemoryRateLimiterForTests());
+  global.fetch = async () => new Response(JSON.stringify({ valid: false, reason: 'invalid', expires_at: null }), { status: 200 });
+  const context = { log: { warn() {} } };
+  const first = await verify(context, { headers: { 'x-forwarded-for': 'edge-a, client-a' }, query: { license: 'test-token-a' } });
+  const second = await verify(context, { headers: { 'x-forwarded-for': 'edge-b, client-a' }, query: { license: 'test-token-b' } });
+  assert.equal(first.headers['X-RateLimit-Remaining'], '19');
+  assert.equal(second.headers['X-RateLimit-Remaining'], '18');
+});
+
 test('fails closed when durable rate-limit storage is unavailable', async () => {
   const originalStorage = process.env.AzureWebJobsStorage;
   const originalRateStorage = process.env.RATE_LIMIT_STORAGE_CONNECTION_STRING;
