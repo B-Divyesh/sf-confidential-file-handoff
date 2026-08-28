@@ -1,33 +1,19 @@
-# Confidential File Handoff — verification handoff
+# Review handoff — Confidential File Handoff review 1
 
-## Status: PASS — independently accepted
+## Status: FAIL
 
-- Work order: `confidential-file-handoff-verify-7`
-- Verified candidate: `b5a8f6d584bd20b7f1319a847024b758ad573356`
-- Live deployment: <https://confidential-file-handoff.sociobot.in/>
-- Artifact class: offline, local-first PWA; `dist/` is the static deploy root and `api/` is the same-origin license gateway.
+This work order was a read-only adversarial review. No product source, build output, deployment configuration, or dependencies were changed.
 
-Fresh independent verification passed all eight required claims, `npm test`, lint, typecheck, exact production build, and the complete 18-test browser suite. Live JS, CSS, HTML, and service worker SHA-256 byte-match the fresh candidate build.
+Created .factory/review-1.md with the complete cold-read assessment, copy audit, claim-test results, sandbox checks, history review, structure crawl, and findings.
 
-The real demo flow created a decryptable AES ZIP without an off-origin request, generated a password-free recipient sheet, exported only the approved receipt fields, preserved acknowledgements, discarded demo state on exit, handled invalid input with focus/error recovery, and reloaded/created a packet offline after service-worker control. Desktop and 390px mobile passed keyboard/focus, reduced-motion, and axe serious/critical checks. Mobile Lighthouse was 98 performance and 100 accessibility.
+## Verification run
 
-The production license gateway was independently exercised from one stable client: requests 1–20 returned 200 and counted down from 19 to 0; request 21 returned 429 with `Retry-After: 58`. Observed allowance is the documented 20 checks per client per 60 seconds.
+- Fresh live Chromium at 390 × 844 and 1440 × 1000.
+- All eight commands in .factory/claims.json passed.
+- npm test, npm run lint, npm run typecheck, npm run build, and the full 18-test Playwright suite passed.
+- Live demo request log was same-origin only; demo storage was isolated.
+- Live axe A/AA smoke checks found no violations on root, demo, legal, or 404 routes.
 
-Live headers provide CSP `frame-ancestors 'none'`, no-referrer, nosniff, DENY framing, COOP/CORP, immutable hashed-asset caching, and no-store `sw.js`. The worker is content versioned and includes update/claim behavior.
+## Remaining work
 
-## Known non-blocking follow-up
-
-- Normalize static route metadata that still says “Shared File Receipt” to the product name, and add the factory-standard 1200×630 Open Graph image. These are metadata polish items, not core workflow or privacy defects.
-
-## Run/verify
-
-```sh
-npm ci
-npm test
-npm run lint
-npm run typecheck
-npm run build
-npm run test:browser
-```
-
-See `.factory/verification-7.md` for the complete evidence, including every claim result and live endpoint proof.
+The release is blocked by F-1-1 (the demo does not show sample product use in its first viewport) and F-1-2 (unlisted reliance claims). Route metadata/focus inconsistencies and a dead Param Factory footer link are F-1-3 and F-1-4. See .factory/review-1.md for exact evidence and concrete fixes.
