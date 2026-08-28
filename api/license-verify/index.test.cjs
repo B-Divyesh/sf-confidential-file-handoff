@@ -32,6 +32,7 @@ class SharedTableClient {
 const originalFetch = global.fetch;
 afterEach(() => {
   verify._setRateLimiterForTests(undefined);
+  verify._setTableClientForTests(undefined);
   global.fetch = originalFetch;
 });
 
@@ -96,6 +97,26 @@ test('@regression:managed-function log functions do not turn an upstream outage 
   const response = await verify({ log() {} }, { headers: {}, query: { license: 'test-token' } });
   assert.equal(response.status, 503);
   assert.equal(response.headers['Retry-After'], '60');
+});
+
+test('@regression:missing-optional-table-sdk still enforces 20 checks and returns 429', async () => {
+  const missing = new Error("Cannot find module '@azure/data-tables'");
+  missing.code = 'MODULE_NOT_FOUND';
+  verify._setTableClientForTests({ fromConnectionString() { throw missing; } });
+  const originalStorage = process.env.AzureWebJobsStorage;
+  process.env.AzureWebJobsStorage = 'configured-for-managed-host';
+  global.fetch = async () => new Response(JSON.stringify({ valid: false, reason: 'invalid', expires_at: null }), { status: 200 });
+  try {
+    const responses = [];
+    for (let index = 0; index < 21; index += 1) {
+      responses.push(await verify({ log() {} }, { headers: { 'user-agent': 'qa-browser' }, query: { license: 'test-token' } }));
+    }
+    assert.deepEqual(responses.slice(0, 20).map(({ status }) => status), Array(20).fill(200));
+    assert.equal(responses[20].status, 429);
+    assert.match(responses[20].headers['Retry-After'], /^\d+$/);
+  } finally {
+    if (originalStorage === undefined) delete process.env.AzureWebJobsStorage; else process.env.AzureWebJobsStorage = originalStorage;
+  }
 });
 
 test('@regression:managed-function-runtime keeps the Azure Table dependency Node 18 compatible', () => {

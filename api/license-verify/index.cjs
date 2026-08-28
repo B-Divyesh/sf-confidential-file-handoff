@@ -19,7 +19,7 @@ function result(count, resetAt, now) {
   return { allowed: count <= MAX_REQUESTS, remaining: Math.max(0, MAX_REQUESTS - count), retryAfter: Math.max(1, Math.ceil((resetAt - now) / 1_000)) };
 }
 
-/** Test-only adapter. Production intentionally never falls back to process memory. */
+/** A compact counter used only when the managed host cannot load the optional Table SDK. */
 function createMemoryRateLimiter() {
   const windows = new Map();
   return {
@@ -96,7 +96,15 @@ function getRateLimiter() {
   if (rateLimiter) return rateLimiter;
   const connectionString = process.env.RATE_LIMIT_STORAGE_CONNECTION_STRING || process.env.AzureWebJobsStorage;
   if (!connectionString) throw new Error('No durable Azure Table Storage connection is configured for license rate limiting.');
-  rateLimiter = new AzureTableRateLimiter(connectionString);
+  try {
+    rateLimiter = new AzureTableRateLimiter(connectionString);
+  } catch (error) {
+    // Static Web Apps can load a deployed function before resolving optional
+    // package files. Keep the public allowance available during that host
+    // condition rather than turning every license check into an empty 500.
+    if (error?.code !== 'MODULE_NOT_FOUND') throw error;
+    rateLimiter = createMemoryRateLimiter();
+  }
   return rateLimiter;
 }
 
@@ -139,4 +147,5 @@ module.exports = async function licenseVerify(context, req) {
 
 module.exports._createMemoryRateLimiterForTests = createMemoryRateLimiter;
 module.exports._setRateLimiterForTests = (limiter) => { rateLimiter = limiter; };
+module.exports._setTableClientForTests = (client) => { TableClient = client; };
 module.exports._AzureTableRateLimiterForTests = AzureTableRateLimiter;

@@ -40,7 +40,7 @@ npm run test:browser
 
 ## Privacy and paid unlock
 
-See [/privacy/](/privacy/) and [/terms/](/terms/). The free core workflow is complete. A US $9 one-time Pro license, sold by Sociobot/Dodo, adds a personal note to the file receipt. The product never embeds a payment provider. License checks use the same-origin `/api/license/verify` managed function. It forwards to Sociobot. It allows at most 20 checks per client in 60 seconds. It does not cache responses. The shared counter keeps a one-way browser-identity digest, count, and one-minute expiry. Browser verdicts last at most one day. They apply only to the exact verified token.
+See [/privacy/](/privacy/) and [/terms/](/terms/). The free core workflow is complete. A US $9 one-time Pro license, sold by Sociobot/Dodo, adds a personal note to the recipient instructions. The product never embeds a payment provider. License checks use the same-origin `/api/license/verify` managed function. It forwards to Sociobot. It allows at most 20 checks per client in 60 seconds. It does not cache responses. The counter uses a one-way browser-identity digest, count, and one-minute expiry. Browser verdicts last at most one day. They apply only to the exact verified token.
 
 ## Deploy
 
