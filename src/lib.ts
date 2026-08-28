@@ -86,11 +86,12 @@ const STORE_NAME = 'handoffs';
 
 export class HandoffStore {
   private db?: IDBDatabase;
+  constructor(private readonly databaseName = DB_NAME) {}
 
   async ready(): Promise<void> {
     if (this.db) return;
     await new Promise<void>((resolve, reject) => {
-      const request = indexedDB.open(DB_NAME, 1);
+      const request = indexedDB.open(this.databaseName, 1);
       request.onupgradeneeded = () => request.result.createObjectStore(STORE_NAME, { keyPath: 'id' });
       request.onsuccess = () => { this.db = request.result; resolve(); };
       request.onerror = () => reject(request.error);
@@ -135,6 +136,15 @@ export class HandoffStore {
     await this.ready();
     return new Promise((resolve, reject) => {
       const request = this.db!.transaction(STORE_NAME, 'readwrite').objectStore(STORE_NAME).delete(id);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  async clear(): Promise<void> {
+    await this.ready();
+    return new Promise((resolve, reject) => {
+      const request = this.db!.transaction(STORE_NAME, 'readwrite').objectStore(STORE_NAME).clear();
       request.onsuccess = () => resolve();
       request.onerror = () => reject(request.error);
     });

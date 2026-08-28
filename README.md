@@ -12,6 +12,12 @@ Live: https://confidential-file-handoff.sociobot.in
 - Lets the sender export/import that checklist as JSON.
 - Works after install and offline once the app shell has been opened.
 
+## Try the demo
+
+Choose **Try it with sample data** or open [/demo](/demo). The demo has two fictional redacted files, uses the `demo:confidential-file-handoff` IndexedDB namespace, and never reads or writes real handoff data. Use **Reset demo** to clear its checklist. See [.factory/demo.md](.factory/demo.md) for the exact sandbox behavior.
+
+Every reliance claim has a sandbox regression test in [.factory/claims.json](.factory/claims.json). Run each listed command from a clean checkout.
+
 This is a handoff aid, not identity verification, a secure transfer service, malware scanning, or medical/legal/compliance certification. Read the in-app threat model before using it for an important exchange.
 
 ZIP entry names are visible without the password, and some built-in ZIP tools do not support AES-256. Rename sensitive filenames before adding them. The generated recipient sheet recommends compatible extractors and a recovery path.

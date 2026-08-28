@@ -1,0 +1,6 @@
+[
+  {"id":"demo-sandbox","claim":"Try it with sample data without saving to real data","where":"landing action, /demo","test":"npm run test:browser -- --grep @claim:demo-sandbox","sandbox":"fresh browser context at /demo; verify sample files, separate demo state, and reset"},
+  {"id":"encrypted-local-zip","claim":"Creates an encrypted ZIP on this device without uploading selected files","where":"landing, builder, README","test":"npm run test:browser -- --grep @claim:encrypted-local-zip","sandbox":"fresh browser context at /demo; create and decrypt the sample ZIP while recording requests"},
+  {"id":"offline-after-first-visit","claim":"Works offline after the first visit","where":"landing, README","test":"npm run test:browser -- --grep @claim:offline-after-first-visit","sandbox":"fresh browser context at /demo; wait for service worker, set offline, reload, and create packet"},
+  {"id":"local-log-export","claim":"Exports the local handoff checklist","where":"handoff log, README","test":"npm run test:browser -- --grep @claim:local-log-export","sandbox":"fresh browser context at /demo; create sample packet and inspect exported checklist fields"}
+]

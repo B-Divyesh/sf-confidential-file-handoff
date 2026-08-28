@@ -5,16 +5,19 @@ import { HandoffStore, makePassword, recipientSheet, uniqueArchiveNames, type Ha
 const SLUG = 'confidential-file-handoff';
 const LICENSE_KEY = `sb_license:${SLUG}`;
 const LICENSE_CACHE_KEY = `sb_license_verdict:${SLUG}`;
-const store = new HandoffStore();
+const isDemo = location.pathname === '/demo' || new URLSearchParams(location.search).get('demo') === '1';
+if (isDemo) document.title = 'Demo — Confidential File Handoff';
+const store = new HandoffStore(isDemo ? `demo:${SLUG}` : undefined);
 let activeRecord: HandoffRecord | undefined;
-let proUnlocked = Boolean(localStorage.getItem(`sb_license:${SLUG}`));
+let proUnlocked = !isDemo && Boolean(localStorage.getItem(LICENSE_KEY));
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
 app.innerHTML = `
-  <header class="site-header"><a class="brand" href="/" aria-label="Confidential File Handoff home"><span class="brand-mark" aria-hidden="true">↗</span> Confidential<br>File Handoff</a><nav aria-label="Site"><a href="#how-it-works">How it works</a><a href="#records">Handoff log</a><a href="#privacy-note">Privacy</a></nav></header>
+  <header class="site-header"><a class="brand" href="/" aria-label="Confidential File Handoff home"><span class="brand-mark" aria-hidden="true">↗</span> Confidential<br>File Handoff</a><nav aria-label="Site"><a href="/demo">Demo</a><a href="#how-it-works">How it works</a><a href="#records">Handoff log</a><a href="/privacy/">Privacy</a></nav></header>
   <main id="main">
+    <aside id="demo-banner" class="demo-banner" ${isDemo ? '' : 'hidden'} aria-label="Demo mode"><strong>Demo — sample data, nothing is saved.</strong><span>Sample files and checklist use a separate browser space.</span><button class="link-button" id="reset-demo" type="button">Reset demo</button><a class="link-button" href="/">Start for real</a></aside>
     <section class="hero" aria-labelledby="page-title">
-      <div class="hero-copy"><p class="eyebrow">A simple procedure for sensitive files</p><h1 id="page-title">Make the file handoff easy to follow.</h1><p class="lede">Create an encrypted ZIP on this device, then give your recipient a plain-language sheet that says exactly where the password arrives.</p><a class="button button-primary" href="#builder">Prepare a handoff <span aria-hidden="true">↓</span></a><p class="microcopy">No upload. No account. Your files and password stay on this device.</p></div>
+      <div class="hero-copy"><p class="eyebrow">A simple procedure for sensitive files</p><h1 id="page-title">Send sensitive files with clear instructions.</h1><p class="lede">For people sending tax, medical, legal, identity, or credential files to a recipient who may need plain steps.</p><div class="hero-actions"><a class="button button-primary" href="/demo">Try it with sample data <span aria-hidden="true">→</span></a><a class="button button-secondary" href="#builder">Prepare a handoff <span aria-hidden="true">↓</span></a></div><p class="microcopy">No upload. Works offline after first visit. Free core tools; Pro is US $9 once.</p></div>
       <figure class="hero-art"><img src="/print-desk.webp" width="900" height="600" alt="" fetchpriority="high" decoding="async"><figcaption>Original generated print illustration. This app does not send your files anywhere.</figcaption></figure>
     </section>
 
@@ -27,8 +30,8 @@ app.innerHTML = `
       <div id="status" class="status" role="status" aria-live="polite"></div>
       <form id="handoff-form" novalidate>
         <fieldset class="step"><legend><span>01</span> Add the files</legend><p class="step-help">They are read only to create a password-protected ZIP. File names are not saved in the handoff log, but someone can see names by listing the ZIP before entering its password. Rename sensitive file names first.</p><input id="files" name="files" type="file" multiple required aria-describedby="file-error"><label class="file-picker" for="files"><span class="file-icon" aria-hidden="true">+</span><strong id="file-label">Choose files</strong><small>PDFs, photos, scans, or any files from this device</small></label><p class="form-error" id="file-error"></p></fieldset>
-        <fieldset class="step"><legend><span>02</span> Write the two routes</legend><div class="field-grid"><div><label for="recipient">Recipient’s first name</label><input id="recipient" name="recipient" autocomplete="name" maxlength="80" required><p class="form-error" id="recipient-error"></p></div><div><label for="delivery">Where will the ZIP go?</label><select id="delivery" name="delivery"><option>Email attachment</option><option>A link you share yourself</option><option>Hand-delivered USB drive</option><option>Another app or service</option></select></div><div><label for="password-channel">Where will the password go?</label><select id="password-channel" name="password-channel"><option>Text message</option><option>A phone call</option><option>In person</option><option>A second email address</option><option>Another separate channel</option></select></div></div><p class="separation-note"><span aria-hidden="true">↔</span> Send the ZIP and its password by different channels. This app cannot make that choice for you.</p><div class="pro-note"><label for="custom-note">Optional personal note <span class="pro-tag">Pro</span></label><textarea id="custom-note" maxlength="280" disabled aria-describedby="custom-note-help"></textarea><p id="custom-note-help" class="microcopy">Unlock Pro to add a short note to the recipient handoff sheet.</p></div></fieldset>
-        <fieldset class="step"><legend><span>03</span> Set a password</legend><p class="step-help">Use a new password for this handoff. Save it in your password manager or write it down before you close this page.</p><div class="password-row"><div><label for="password">ZIP password</label><input id="password" name="password" type="text" autocapitalize="off" autocomplete="new-password" spellcheck="false" minlength="12" required aria-describedby="password-error"><p class="form-error" id="password-error"></p></div><button id="generate-password" class="button button-secondary" type="button">Make a password</button></div><label class="checkline"><input id="password-saved" type="checkbox" required><span>I have saved this password somewhere safe. It will not be saved by this app.</span></label><p class="form-error" id="saved-error"></p></fieldset>
+        <fieldset class="step"><legend><span>02</span> Write the two routes</legend><div class="field-grid"><div><label for="recipient">Recipient’s first name</label><input id="recipient" name="recipient" autocomplete="name" maxlength="80" required aria-describedby="recipient-error"><p class="form-error" id="recipient-error"></p></div><div><label for="delivery">Where will the ZIP go?</label><select id="delivery" name="delivery"><option>Email attachment</option><option>A link you share yourself</option><option>Hand-delivered USB drive</option><option>Another app or service</option></select></div><div><label for="password-channel">Where will the password go?</label><select id="password-channel" name="password-channel"><option>Text message</option><option>A phone call</option><option>In person</option><option>A second email address</option><option>Another separate channel</option></select></div></div><p class="separation-note"><span aria-hidden="true">↔</span> Send the ZIP and its password by different channels. This app cannot make that choice for you.</p><div class="pro-note"><label for="custom-note">Optional personal note <span class="pro-tag">Pro</span></label><textarea id="custom-note" maxlength="280" disabled aria-describedby="custom-note-help"></textarea><p id="custom-note-help" class="microcopy">Unlock Pro to add a short note to the recipient handoff sheet.</p></div></fieldset>
+        <fieldset class="step"><legend><span>03</span> Set a password</legend><p class="step-help">Use a new password for this handoff. Save it in your password manager or write it down before you close this page.</p><div class="password-row"><div><label for="password">ZIP password</label><input id="password" name="password" type="text" autocapitalize="off" autocomplete="new-password" spellcheck="false" minlength="12" required aria-describedby="password-error"><p class="form-error" id="password-error"></p></div><button id="generate-password" class="button button-secondary" type="button">Make a password</button></div><label class="checkline"><input id="password-saved" type="checkbox" required aria-describedby="saved-error"><span>I have saved this password somewhere safe. It will not be saved by this app.</span></label><p class="form-error" id="saved-error"></p></fieldset>
         <button id="prepare" class="button button-primary button-large" type="submit">Create encrypted ZIP and handoff sheet <span aria-hidden="true">→</span></button>
       </form>
     </section>
@@ -42,7 +45,7 @@ app.innerHTML = `
 
     <section class="pro" aria-labelledby="pro-title"><div><p class="eyebrow">One-time Pro unlock</p><h2 id="pro-title">Add a personal note to the handoff sheet.</h2><p>Pro is a one-time US $9 purchase that unlocks a custom note on recipient sheets. The encrypted ZIP, handoff sheet, local log, and exports stay free.</p></div><div id="license-panel"><a class="button button-primary" href="https://api.sociobot.in/api/v1/products/confidential-file-handoff/checkout">Buy Pro once — US $9</a><label for="license-input">Already bought it? Paste your license</label><div class="license-row"><input id="license-input" type="text" autocomplete="off" aria-describedby="license-status"><button id="restore-license" class="button button-secondary" type="button">Restore purchase</button></div><p id="license-status" class="microcopy" aria-live="polite"></p></div></section>
   </main>
-  <footer><p>Built for careful, human-scale handoffs. <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></p><p>Artwork is original AI-generated product artwork; files never leave your device through this app.</p></footer><div id="update-toast" class="update-toast" hidden role="status" aria-live="polite"><span>A newer version is ready.</span><button id="reload-app" class="button button-secondary" type="button">Refresh</button></div>`;
+  <footer><p>Built for careful, human-scale handoffs. <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></p><p>Artwork is original AI-generated product artwork. <a href="https://paramfactory.com">Built by Param Factory</a> · build ${__BUILD_ID__}</p></footer><div id="update-toast" class="update-toast" hidden role="status" aria-live="polite"><span>A newer version is ready.</span><button id="reload-app" class="button button-secondary" type="button">Refresh</button></div>`;
 
 const form = document.querySelector<HTMLFormElement>('#handoff-form')!;
 const filesInput = document.querySelector<HTMLInputElement>('#files')!;
@@ -58,6 +61,20 @@ function setError(id: string, message = '') { document.querySelector<HTMLElement
 function download(blob: Blob, name: string) { const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); }
 function displayDate(value?: string) { return value ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(new Date(value)) : 'Not yet'; }
 
+function loadDemoSample() {
+  const transfer = new DataTransfer();
+  transfer.items.add(new File(['Tax return sample — redacted and fictional.'], '2026-tax-summary.txt', { type: 'text/plain' }));
+  transfer.items.add(new File(['Identity document sample — redacted and fictional.'], 'identity-checklist.txt', { type: 'text/plain' }));
+  filesInput.files = transfer.files;
+  document.querySelector('#file-label')!.textContent = '2 sample files selected';
+  recipientInput.value = 'Maya';
+  passwordInput.value = 'sample-password-2026';
+  savedInput.checked = true;
+  (document.querySelector<HTMLSelectElement>('#delivery')!).value = 'Email attachment';
+  (document.querySelector<HTMLSelectElement>('#password-channel')!).value = 'Text message';
+  setStatus('Sample handoff is ready to review. Create it to see the two downloads and local checklist.', 'success');
+}
+
 filesInput.addEventListener('change', () => { const count = filesInput.files?.length || 0; document.querySelector('#file-label')!.textContent = count ? `${count} ${count === 1 ? 'file' : 'files'} selected` : 'Choose files'; setError('file-error'); });
 document.querySelector('#generate-password')!.addEventListener('click', () => { passwordInput.value = makePassword(); passwordInput.focus(); setStatus('A new 18-character password is ready. Save it before preparing the packet.'); });
 
@@ -69,7 +86,12 @@ form.addEventListener('submit', async (event) => {
   if (!recipientInput.value.trim()) { setError('recipient-error', 'Add the recipient’s first name so their sheet is clear.'); valid = false; }
   if (passwordInput.value.length < 12) { setError('password-error', 'Use at least 12 characters for the ZIP password.'); valid = false; }
   if (!savedInput.checked) { setError('saved-error', 'Confirm that you saved the password first.'); valid = false; }
-  if (!valid) { setStatus('There are a few details to fix before the packet can be prepared.', 'error'); return; }
+  if (!valid) {
+    setStatus('Fix the marked fields before preparing the packet.', 'error');
+    const firstInvalid = !filesInput.files?.length ? filesInput : !recipientInput.value.trim() ? recipientInput : passwordInput.value.length < 12 ? passwordInput : savedInput;
+    firstInvalid.focus();
+    return;
+  }
   const submit = document.querySelector<HTMLButtonElement>('#prepare')!;
   submit.disabled = true; submit.textContent = 'Encrypting on this device…'; setStatus('Preparing the encrypted ZIP. Large files can take a moment; keep this tab open.', 'busy');
   try {
@@ -170,15 +192,36 @@ async function renderRecords() {
 document.querySelector('#export-records')!.addEventListener('click', async () => { try { download(new Blob([JSON.stringify({ version: 1, exportedAt: new Date().toISOString(), handoffs: await store.all() }, null, 2)], { type: 'application/json' }), 'confidential-file-handoff-log.json'); } catch { setStatus('The log could not be exported in this browser.', 'error'); } });
 document.querySelector<HTMLInputElement>('#import-records')!.addEventListener('change', async (event) => { const file = (event.target as HTMLInputElement).files?.[0]; if (!file) return; try { const data = JSON.parse(await file.text()); if (!Array.isArray(data.handoffs)) throw new Error('format'); const count = await store.replace(data.handoffs); await renderRecords(); setStatus(`${count} ${count === 1 ? 'handoff log entry was' : 'handoff log entries were'} imported.`, 'success'); } catch { setStatus('That file is not a valid handoff-log export. No entries were imported.', 'error'); } finally { (event.target as HTMLInputElement).value = ''; } });
 
-function storedLicense(): string | null { return localStorage.getItem(LICENSE_KEY); }
+function storedLicense(): string | null { return isDemo ? null : localStorage.getItem(LICENSE_KEY); }
 function setLicenseStatus(message: string) { document.querySelector('#license-status')!.textContent = message; }
 function setProUnlocked(unlocked: boolean) { proUnlocked = unlocked; const note = document.querySelector<HTMLTextAreaElement>('#custom-note')!; const help = document.querySelector<HTMLElement>('#custom-note-help')!; note.disabled = !unlocked; help.textContent = unlocked ? 'Pro is active. This note is included only in the downloaded recipient sheet.' : 'Unlock Pro to add a short note to the recipient handoff sheet.'; }
 function cachedLicenseVerdict(): { checkedAt: number; valid: boolean } | null { try { const value = JSON.parse(localStorage.getItem(LICENSE_CACHE_KEY) || 'null') as { checkedAt?: unknown; valid?: unknown } | null; return value && typeof value.checkedAt === 'number' && typeof value.valid === 'boolean' ? value as { checkedAt: number; valid: boolean } : null; } catch { return null; } }
-async function verifyLicense(force = false) { const license = storedLicense(); if (!license) return; const cache = cachedLicenseVerdict(); if (!force && cache && Date.now() - cache.checkedAt < 86_400_000) { setProUnlocked(cache.valid); setLicenseStatus(cache.valid ? 'Pro is unlocked on this device.' : 'This license is not active.'); return; }
-  setLicenseStatus('Checking your license…'); try { const response = await fetch(`/api/license/verify?license=${encodeURIComponent(license)}`); const verdict = await response.json() as { valid: boolean }; localStorage.setItem(LICENSE_CACHE_KEY, JSON.stringify({ checkedAt: Date.now(), valid: verdict.valid })); setProUnlocked(verdict.valid); setLicenseStatus(verdict.valid ? 'Pro is unlocked on this device.' : 'License no longer active. You can purchase a new unlock.'); } catch { setLicenseStatus('Pro remains available from its last local check. We will check again when online.'); }
+async function verifyLicense(force = false) {
+  const license = storedLicense();
+  if (!license) return;
+  const cache = cachedLicenseVerdict();
+  if (!force && cache && Date.now() - cache.checkedAt < 86_400_000) {
+    setProUnlocked(cache.valid);
+    setLicenseStatus(cache.valid ? 'Pro is unlocked on this device.' : 'This license is not active.');
+    return;
+  }
+  setLicenseStatus('Checking your license…');
+  try {
+    const response = await fetch(`/api/license/verify?license=${encodeURIComponent(license)}`);
+    if (!response.ok) throw new Error(`License service returned ${response.status}`);
+    const verdict = await response.json() as { valid?: unknown; reason?: unknown };
+    if (typeof verdict.valid !== 'boolean') throw new Error('Invalid license response');
+    // Only a definitive 200 response is retained. Temporary outages must not revoke a buyer.
+    localStorage.setItem(LICENSE_CACHE_KEY, JSON.stringify({ checkedAt: Date.now(), valid: verdict.valid }));
+    setProUnlocked(verdict.valid);
+    setLicenseStatus(verdict.valid ? 'Pro is unlocked on this device.' : 'License no longer active. You can purchase a new unlock.');
+  } catch {
+    setProUnlocked(cache?.valid === true);
+    setLicenseStatus(cache?.valid ? 'Pro remains available from its last verified check. We will check again when online.' : 'We could not verify this license. Pro stays locked until a check succeeds.');
+  }
 }
-const queryLicense = new URLSearchParams(location.search).get('license'); if (queryLicense) { localStorage.setItem(LICENSE_KEY, queryLicense); setProUnlocked(true); history.replaceState({}, '', location.pathname + location.hash); setLicenseStatus('License saved. Checking it now…'); }
-document.querySelector('#restore-license')!.addEventListener('click', () => { const input = document.querySelector<HTMLInputElement>('#license-input')!; if (!input.value.trim()) { setLicenseStatus('Paste a license token first.'); return; } localStorage.setItem(LICENSE_KEY, input.value.trim()); setProUnlocked(true); input.value = ''; verifyLicense(true); });
+const queryLicense = new URLSearchParams(location.search).get('license'); if (queryLicense && !isDemo) { localStorage.setItem(LICENSE_KEY, queryLicense); history.replaceState({}, '', location.pathname + location.hash); setLicenseStatus('License saved. Checking it now…'); }
+document.querySelector('#restore-license')!.addEventListener('click', () => { if (isDemo) { setLicenseStatus('Start for real before restoring a license.'); return; } const input = document.querySelector<HTMLInputElement>('#license-input')!; if (!input.value.trim()) { setLicenseStatus('Paste a license token first.'); return; } localStorage.setItem(LICENSE_KEY, input.value.trim()); input.value = ''; setProUnlocked(false); verifyLicense(true); });
 
 if ('serviceWorker' in navigator) {
   let hadController = Boolean(navigator.serviceWorker.controller);
@@ -195,5 +238,10 @@ document.querySelector('#reload-app')!.addEventListener('click', () => location.
 if (!navigator.onLine) setStatus('You are offline. This app can still prepare files locally; reconnect only to load a new version or check a license.', 'busy');
 window.addEventListener('offline', () => setStatus('You are offline. Your files still stay on this device.', 'busy'));
 window.addEventListener('online', () => setStatus('You are back online.', 'success'));
-renderRecords(); verifyLicense();
+if (isDemo) {
+  loadDemoSample();
+  document.querySelector('#reset-demo')!.addEventListener('click', async () => { await store.clear(); loadDemoSample(); await renderRecords(); });
+  setLicenseStatus('Pro is unavailable in the sample demo.');
+} else verifyLicense();
+renderRecords();
 setProUnlocked(proUnlocked);

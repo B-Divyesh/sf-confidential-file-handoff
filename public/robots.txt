@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://confidential-file-handoff.sociobot.in/sitemap.xml

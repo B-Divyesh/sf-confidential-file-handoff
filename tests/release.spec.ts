@@ -135,6 +135,80 @@ test('returned licenses are stripped and verified through the same-origin gatewa
   await expect(page.locator('#custom-note')).toBeDisabled();
 });
 
+test('@claim:demo-sandbox sample demo is ready in an isolated namespace and resets', async ({ page }) => {
+  await page.goto('/demo');
+  await expect(page.getByText('Demo — sample data, nothing is saved.')).toBeVisible();
+  await expect(page.locator('#file-label')).toHaveText('2 sample files selected');
+  await expect(page.locator('#recipient')).toHaveValue('Maya');
+  expect(await page.evaluate(() => localStorage.getItem('sb_license:confidential-file-handoff'))).toBeNull();
+  await page.locator('#reset-demo').click();
+  await expect(page.locator('#file-label')).toHaveText('2 sample files selected');
+  await expect(page.locator('#record-list')).toContainText('No handoffs logged yet');
+});
+
+test('@claim:encrypted-local-zip demo creates a decryptable AES ZIP without uploads', async ({ page }) => {
+  const requests: string[] = [];
+  page.on('request', (request) => requests.push(request.url()));
+  await page.goto('/demo');
+  const downloadPromise = page.waitForEvent('download');
+  await page.locator('#prepare').click();
+  await expect(page.locator('#kit')).toBeVisible();
+  await page.locator('#download-zip').click();
+  const download = await downloadPromise;
+  const reader = new ZipReader(new BlobReader(new Blob([await readFile(await download.path() as string)])));
+  const entries = await reader.getEntries();
+  expect(entries).toHaveLength(2);
+  await expect(entries[0].getData!(new BlobWriter(), { password: 'sample-password-2026' })).resolves.toBeInstanceOf(Blob);
+  await reader.close();
+  expect(requests.every((url) => new URL(url).origin === 'http://127.0.0.1:4173')).toBe(true);
+});
+
+test('@claim:offline-after-first-visit demo reloads and creates a packet offline', async ({ page, context }) => {
+  await page.goto('/demo');
+  await page.evaluate(() => navigator.serviceWorker.ready);
+  await page.reload();
+  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+  await context.setOffline(true);
+  await page.reload();
+  await page.locator('#prepare').click();
+  await expect(page.locator('#kit')).toBeVisible();
+  await context.setOffline(false);
+});
+
+test('@claim:local-log-export demo exports only checklist fields', async ({ page }) => {
+  await page.goto('/demo');
+  await page.locator('#prepare').click();
+  const downloadPromise = page.waitForEvent('download');
+  await page.locator('#export-records').click();
+  const download = await downloadPromise;
+  const contents = JSON.parse(await readFile(await download.path() as string, 'utf8')) as { handoffs: Array<Record<string, unknown>> };
+  expect(Object.keys(contents.handoffs[0]).sort()).toEqual(['createdAt', 'delivery', 'id', 'passwordChannel', 'recipient']);
+});
+
+test('an unverified token stays locked during a network failure and temporary errors preserve a cached verdict', async ({ page }) => {
+  await page.route('**/api/license/verify?**', async (route) => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ valid: false, reason: 'unavailable' }) }));
+  await page.goto('/?license=not-a-real-license');
+  await expect(page.locator('#custom-note')).toBeDisabled();
+  await expect(page.locator('#license-status')).toContainText('Pro stays locked');
+  expect(await page.evaluate(() => localStorage.getItem('sb_license_verdict:confidential-file-handoff'))).toBeNull();
+  await page.evaluate(() => localStorage.setItem('sb_license_verdict:confidential-file-handoff', JSON.stringify({ checkedAt: Date.now() - 90_000_000, valid: true })));
+  await page.reload();
+  await expect(page.locator('#custom-note')).toBeEnabled();
+  await expect(page.locator('#license-status')).toContainText('last verified check');
+  const cache = await page.evaluate(() => localStorage.getItem('sb_license_verdict:confidential-file-handoff'));
+  expect(JSON.parse(cache || '{}').valid).toBe(true);
+});
+
+test('invalid submit focuses the first associated field and announces its correction', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('#files').setInputFiles({ name: 'sample.txt', mimeType: 'text/plain', buffer: Buffer.from('sample') });
+  await page.locator('#prepare').click();
+  await expect(page.locator('#status')).toContainText('Fix the marked fields');
+  await expect(page.locator('#recipient')).toBeFocused();
+  await expect(page.locator('#recipient')).toHaveAttribute('aria-describedby', 'recipient-error');
+  await expect(page.locator('#password-saved')).toHaveAttribute('aria-describedby', 'saved-error');
+});
+
 test('mobile keyboard focus and touch targets are visible and accessible in both themes', async ({ browser }) => {
   for (const colorScheme of ['light', 'dark'] as const) {
     const context = await browser.newContext({ viewport: { width: 390, height: 844 }, colorScheme });
@@ -148,7 +222,7 @@ test('mobile keyboard focus and touch targets are visible and accessible in both
       .filter(({ width, height }) => width < 44 || height < 44));
     expect(tooSmall).toEqual([]);
     await page.addScriptTag({ content: axe.source });
-    const violations = await page.evaluate(async () => (await window.axe.run(document)).violations.filter((violation) => ['serious', 'critical'].includes(violation.impact || '')));
+    const violations = await page.evaluate(async () => (await window.axe.run(document)).violations);
     expect(violations).toEqual([]);
     await context.close();
   }

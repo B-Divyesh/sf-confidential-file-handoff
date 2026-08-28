@@ -42,5 +42,8 @@
       "route": "/manifest.webmanifest",
       "headers": { "Cache-Control": "public, max-age=3600" }
     }
-  ]
+  ],
+  "responseOverrides": {
+    "404": { "rewrite": "/404.html", "statusCode": 404 }
+  }
 }
