@@ -1,64 +1,43 @@
-# Polish round 2 handoff — Confidential File Handoff
+# Review round 3 handoff — Confidential File Handoff
 
-## Status
+## Outcome
 
-Complete. Every finding in `.factory/review-1.md` and `.factory/review-2.md` is fixed, tested, pushed, deployed, and rechecked cold on the live URL. No known product gap or deferred minor item remains.
+Adversarial first-read review 3 is complete. The verdict is **FAIL** with four blocking findings and ten minor findings. No product code was changed.
 
-## What changed
+The full report is `.factory/review-3.md`.
 
-- Added explicit, observable claims for ZIP filename exposure, extractor/fallback guidance, and the absence of recipient verification.
-- Made the AES-256 claim test prove WinZip AES strength 3, reject missing and wrong phrases, and decrypt with the correct phrase.
-- Standardized the ordered header navigation on Root, Demo, Privacy, Terms, 404, and offline pages.
-- Fixed focus restoration for cross-page hash links as well as normal navigation and Back/Forward.
-- Removed untestable public limitation promises and moved README implementation jargon into developer sections.
-- Updated `.factory/claims.json`, `.factory/copy-audit.md`, `.factory/catalog-description.txt`, and `.factory/polish-2.md`.
-- Preserved the dithered security-print identity and original product artwork.
+## Verification performed
 
-## Verification
+- Opened the live root cold at 390 × 844, 1440 × 900, 1366 × 768, and 1280 × 720.
+- Exercised the live demo’s sample creation, Reset, Start for real, storage isolation, and request log.
+- Ran all 25 commands in `.factory/claims.json` separately: 25/25 passed.
+- Confirmed all 25 claim tags occur exactly once in test source.
+- Ran `npm test`, `npm run lint`, `npm run typecheck`, `npm run build`, and `npm run test:browser`: all passed; Playwright passed 36/36.
+- Audited live metadata, titles, headings, shared navigation, footer, mobile overflow, console output, and links across Root, Demo, Privacy, Terms, Offline, and 404.
+- Ran live axe WCAG 2 A/AA checks on those routes: zero violations.
+- Read and rechecked every finding in reviews 1–2, polish reports 1–2, and the previous handoff.
+- Audited every landing and README sentence with word counts.
 
-A fresh local clone of commit `82e1e2a842082108a8df6c5d29dfe2a469b026e2` passed:
+## Findings left for the repairer
 
-- Every command in `.factory/claims.json`, run separately: 25/25.
-- Claim-tag audit: every one of 25 IDs occurs exactly once in test source.
-- `npm run typecheck`: pass.
-- `npm run lint`: pass.
-- `npm test`: 4 Vitest tests and 9 gateway tests pass.
-- `npm run build`: pass; `dist/index.html` and `dist/demo/index.html` exist.
-- `npm run test:browser`: 36/36 pass.
-- Initial bundles: 71.30 KB JS gzip and 4.20 KB CSS gzip.
-- Local `verify-url.sh`: Root, Demo, Privacy, and Terms return 200 with exact titles, `lang=en`, one h1, a main landmark, labelled buttons/images, and no console errors.
-- Local Lighthouse mobile: performance 98, accessibility 100, best practices 100, SEO 100; LCP 2.3 s, CLS 0, TBT 120 ms.
+Blocking:
 
-The browser suite covers successful and failed ZIP decryption, duplicate filenames, delayed acknowledgements, blocked storage, strict import validation, license boundaries, demo isolation/reset/exit, privacy request logs, offline creation, metadata, focus, 404, links, mobile touch targets, both color schemes, and axe accessibility checks.
+1. The first action is below the fold at 1366 × 768 and 1280 × 720.
+2. Privacy says the license token stays in the browser although verification sends it to `/api/license/verify`; the behavior is also unlisted in `claims.json`.
+3. Privacy promises log deletion and browser-storage clearing without registered claim tests.
+4. `/offline.html` lacks complete metadata and route-focus support, is absent from route test matrices, and does not share the same footer/build identifier.
 
-## Deployment and live verification
+Minor findings cover one deictic result heading, two unclear/jargon labels, a generic update button, a non-actionable privacy contact instruction, and five README jargon rewrites.
 
-- Repair commit pushed to `origin/main`: `82e1e2a842082108a8df6c5d29dfe2a469b026e2`.
-- Azure Static Web Apps deployment ID: `4b4b963f-6103-4c97-a762-1ed72159e132`.
-- Live URL: `https://confidential-file-handoff.sociobot.in`.
-- Production footer build: `82e1e2a`.
-- Cold live demo/archive audit: 18/18 checks pass, including first-viewport sample/action, isolated database, Reset, same-origin requests, AES-256 metadata, missing/wrong phrase rejection, successful decryption, visible entry names, and exact compatibility guidance.
-- Cold live route audit: 24/24 checks pass across Root, Demo, Privacy, Terms, and 404, including the identical header, 390px overflow, semantic skeleton, route focus/announcement, and zero serious/critical axe findings.
-- Live offline audit: service worker controls the demo; cold offline reload and sample handoff creation pass.
-- Live unknown route returns HTTP 404 with the designed page.
-- Final `verify-url.sh` checks report no console or page errors.
-- Final live Lighthouse mobile: performance 98, accessibility 100, best practices 100, SEO 100; LCP 2.1 s, CLS 0, TBT 130 ms.
-
-Evidence is in `.factory/evidence/polish-2-local/` and `.factory/evidence/polish-2-live/`. The live prepared demo is `.factory/evidence/polish-2-live/demo-created-mobile.png`.
-
-## Run and verify
+## How to reproduce
 
 ```sh
 npm ci
-npm run typecheck
-npm run lint
 npm test
+npm run lint
+npm run typecheck
 npm run build
 npm run test:browser
 ```
 
-Run every `test` command in `.factory/claims.json` separately to reproduce the claim audit.
-
-## Known gaps and next steps
-
-None.
+Run each `test` command in `.factory/claims.json` separately. For the first-screen failure, inspect the live root at 1366 × 768. For the route failure, open `/offline.html`, click **Privacy**, and inspect `document.activeElement`; it remains `BODY`.
