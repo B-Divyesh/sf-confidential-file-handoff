@@ -943,6 +943,7 @@ test("routes have exact titles, complete metadata, a shared shell, and a real 40
   await expect(page).toHaveTitle("Page not found — Confidential File Handoff");
   await expect(page.locator("header .brand")).toBeVisible();
   await expect(page.locator("footer")).toBeVisible();
+  await expect(page.locator('link[rel="manifest"]')).toHaveCount(1);
   await expect(page.locator("footer")).toContainText(/build [a-f0-9]{7}/);
   expect(await page.locator("header nav a").allTextContents()).toEqual(
     expectedNavigation,
