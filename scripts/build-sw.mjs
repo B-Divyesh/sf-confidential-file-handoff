@@ -1,8 +1,25 @@
 import { createHash } from 'node:crypto';
 import { readdir, readFile, writeFile } from 'node:fs/promises';
+import { execFileSync } from 'node:child_process';
 import { join, relative, resolve } from 'node:path';
+import { env } from 'node:process';
 
 const root = resolve('dist');
+const buildId = env.GITHUB_SHA?.slice(0, 7) || execFileSync('git', ['rev-parse', '--short', 'HEAD']).toString().trim();
+
+async function replaceBuildId(directory) {
+  const entries = await readdir(directory, { withFileTypes: true });
+  await Promise.all(entries.map(async (entry) => {
+    const file = join(directory, entry.name);
+    if (entry.isDirectory()) return replaceBuildId(file);
+    if (!entry.name.endsWith('.html')) return undefined;
+    const html = await readFile(file, 'utf8');
+    if (html.includes('__BUILD_ID__')) await writeFile(file, html.replaceAll('__BUILD_ID__', buildId));
+    return undefined;
+  }));
+}
+
+await replaceBuildId(root);
 
 async function filesUnder(directory) {
   const entries = await readdir(directory, { withFileTypes: true });

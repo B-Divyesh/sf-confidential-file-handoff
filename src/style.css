@@ -958,6 +958,22 @@ footer a {
   color: var(--green);
   font-weight: 900;
 }
+@media (min-width: 721px) {
+  .hero {
+    gap: clamp(2rem, 4vw, 4rem);
+    padding: clamp(1.75rem, 3.2vw, 3rem) 0 3rem;
+  }
+  .hero h1 {
+    font-size: clamp(3rem, 4.6vw, 4.5rem);
+    max-width: 12ch;
+  }
+  .lede {
+    margin: 1.15rem 0;
+  }
+  .hero-facts {
+    margin-top: 0.8rem;
+  }
+}
 .sr-only {
   position: absolute;
   width: 1px;

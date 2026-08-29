@@ -9,7 +9,7 @@ Live: https://confidential-file-handoff.sociobot.in
 - Creates the AES-256 protected `confidential-file-handoff.zip` in the browser.
 - Creates a handoff sheet that names the ZIP and explains both delivery routes.
 - Stores only the recipient, dates, and selected routes in a browser database.
-- Exports the handoff log as JSON and imports valid exports.
+- Exports a handoff-log backup file and imports valid backups (JSON).
 - Works offline after the first visit.
 
 The app does not upload selected files, access phrases, file names, or handoff sheets. ZIP entry names remain visible before the access phrase is entered. Rename sensitive file names before adding them.
@@ -53,11 +53,11 @@ License checks pass through this product before reaching Sociobot. Responses are
 
 ## Implementation notes
 
-Demo data uses the IndexedDB database `demo:confidential-file-handoff`; real data uses `confidential-file-handoff`. License checks use the same-origin `/api/license/verify` function, which sends `Cache-Control: no-store`.
+Demo and real records use separate browser databases: `demo:confidential-file-handoff` and `confidential-file-handoff`. License checks go through `/api/license/verify` on this site. Its responses tell browsers and proxies not to cache them.
 
 ## Deploy
 
-This is an Azure Static Web Apps deployment. The static root is `dist/`; `api/` contains the same-origin license gateway.
+Deploy the files in `dist/`. Deploy `api/` with them to handle license checks on the same site.
 
 ```sh
 /opt/fleet/lib/deploy-static.sh confidential-file-handoff dist
@@ -65,7 +65,7 @@ This is an Azure Static Web Apps deployment. The static root is `dist/`; `api/` 
 
 ## Design and artwork
 
-The dithered security-print visual system and asset provenance are in [.factory/design.md](.factory/design.md). The original artwork was generated for this product. Core use loads no third-party fonts, scripts, analytics, or icon libraries.
+[.factory/design.md](.factory/design.md) documents the print-style design and where its artwork came from. The original artwork was generated for this product. Core use loads no third-party fonts, scripts, analytics, or icon libraries.
 
 ## License
 

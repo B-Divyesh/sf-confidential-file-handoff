@@ -1,6 +1,6 @@
 # Copy audit
 
-Audited against the rendered landing page and demo on 2026-08-28. Word counts treat contractions and hyphenated terms as one word. No sentence exceeds 22 words. No banned marketing word appears in rendered copy.
+Audited against the rendered landing page, demo, legal pages, and README on 2026-08-29. Word counts treat contractions and hyphenated terms as one word. No sentence exceeds 22 words. No banned marketing word appears in rendered copy.
 
 ## First screen
 
@@ -37,7 +37,7 @@ Audited against the rendered landing page and demo on 2026-08-28. Word counts tr
 
 | Sentence                                                                                           | Words |
 | -------------------------------------------------------------------------------------------------- | ----: |
-| Send these two things separately.                                                                  |     5 |
+| Send the protected ZIP and handoff sheet separately.                                               |     8 |
 | Send this file using your selected delivery route.                                                 |     8 |
 | It requires the access phrase to open.                                                             |     7 |
 | Send or print this with the ZIP.                                                                   |     7 |
@@ -45,7 +45,7 @@ Audited against the rendered landing page and demo on 2026-08-28. Word counts tr
 | Keep only the recipient, routes, and dates.                                                        |     7 |
 | I sent the protected ZIP and handoff sheet.                                                        |     8 |
 | The recipient confirmed they opened the files.                                                     |     7 |
-| If a built-in ZIP tool cannot open it, the handoff sheet names three compatible extractors and a reporting step. |    19 |
+| If your ZIP app cannot open it, the handoff sheet names three apps to try and what to report.      |    19 |
 | This browser keeps only the recipient, dates, and delivery routes.                                 |    11 |
 | It does not keep files, file names, or access phrases.                                             |    10 |
 | No handoffs logged yet.                                                                            |     4 |
@@ -60,6 +60,8 @@ Audited against the rendered landing page and demo on 2026-08-28. Word counts tr
 | Creating the ZIP, handoff sheet, handoff log, and exports remains free.                            |    11 |
 | Create protected ZIP handoffs on your device.                                                      |     7 |
 | Original AI-generated product artwork.                                                             |     4 |
+| A newer version is ready.                                                                          |     5 |
+| Load the new version.                                                                              |     4 |
 
 ## Demo first screen
 
@@ -83,6 +85,27 @@ Audited against the rendered landing page and demo on 2026-08-28. Word counts tr
 
 ## README language check
 
-The reader-facing sections use **browser database**, **this product**, and **browser result**. Exact database names, IndexedDB, route paths, same-origin behavior, and deployment terms appear only under **Implementation notes**, **Run and verify**, or **Deploy**.
+The reader-facing sections use **browser database**, **this product**, and **browser result**. Exact database names and route paths appear only under **Implementation notes** or **Deploy**.
 
 No reader-facing sentence exceeds 22 words. The README uses the same terms as the interface: **protected ZIP**, **handoff sheet**, **handoff log**, **ZIP access phrase**, and **demo**.
+
+## Round 3 rewrites
+
+| Location | Sentence | Words |
+| --- | --- | ---: |
+| Result heading | Send the protected ZIP and handoff sheet separately. | 8 |
+| Result heading | Record sent and opened status. | 5 |
+| Compatibility note | If your ZIP app cannot open it, the handoff sheet names three apps to try and what to report. | 19 |
+| Update control | Load the new version. | 4 |
+| README backup | Exports a handoff-log backup file and imports valid backups (JSON). | 9 |
+| README implementation | Demo and real records use separate browser databases. | 8 |
+| README implementation | License checks go through this site. | 6 |
+| README implementation | Its responses tell browsers and proxies not to cache them. | 10 |
+| README deploy | Deploy the files in `dist/`. | 5 |
+| README deploy | Deploy `api/` with them to handle license checks on the same site. | 13 |
+| README design | `.factory/design.md` documents the print-style design and where its artwork came from. | 11 |
+| Privacy | A license token is stored in this browser. | 8 |
+| Privacy | When the app checks it, it sends the token to this site’s license gateway in a request body. | 18 |
+| Privacy | Clearing this site’s browser storage removes handoff records and saved license results. | 12 |
+
+The revised terminology remains: **protected ZIP**, **handoff sheet**, **handoff log**, **ZIP access phrase**, and **demo**.

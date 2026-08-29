@@ -84,6 +84,20 @@
     "sandbox": "fresh demo; export a created handoff, reset the database, import the file, and assert the restored row"
   },
   {
+    "id": "local-log-delete",
+    "claim": "Deletes a handoff-log entry after reload",
+    "where": "privacy, handoff log",
+    "test": "npm run test:browser -- --grep @claim:local-log-delete",
+    "sandbox": "fresh demo; create a handoff, reload, confirm deletion, and assert the entry is absent from the visible log and IndexedDB"
+  },
+  {
+    "id": "site-storage-clear",
+    "claim": "Clearing this site's browser storage removes handoff records and saved license results",
+    "where": "privacy",
+    "test": "npm run test:browser -- --grep @claim:site-storage-clear",
+    "sandbox": "fresh browser; create real and demo records plus license state, clear all browser site data for the origin, then assert no databases or license keys remain"
+  },
+  {
     "id": "access-phrase-excluded",
     "claim": "The ZIP access phrase is never stored or included in the handoff sheet",
     "where": "builder, handoff log, privacy, README",
@@ -138,6 +152,13 @@
     "where": "privacy, README",
     "test": "npm run test:browser -- --grep @claim:license-cache-ttl",
     "sandbox": "seed exact-token verdicts immediately below and above 86400000 ms; assert reuse and recheck behavior"
+  },
+  {
+    "id": "license-token-handling",
+    "claim": "A license token is stored in this browser and sent to this site's license gateway in a request body when the app checks it",
+    "where": "privacy, Pro license restore",
+    "test": "npm run test:browser -- --grep @claim:license-token-handling",
+    "sandbox": "fresh real mode; return a license token, record the check, and assert browser storage plus a same-origin POST body with no token in the URL"
   },
   {
     "id": "license-rate-limit",

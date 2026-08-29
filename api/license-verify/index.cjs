@@ -1,6 +1,7 @@
 'use strict';
 
 const { createHash } = require('node:crypto');
+const { Buffer } = require('node:buffer');
 
 const WINDOW_MS = 60_000;
 const MAX_REQUESTS = 20;
@@ -121,6 +122,19 @@ function clientKey(req) {
   return String(principal).trim() || browserProfile || String(platformClient).trim() || forwarded.at(-1) || 'unknown-client';
 }
 
+function requestedLicense(req) {
+  if (Buffer.isBuffer(req.body)) {
+    try { return String(JSON.parse(req.body.toString('utf8')).license ?? '').trim(); }
+    catch { return ''; }
+  }
+  if (req.body && typeof req.body === 'object') return String(req.body.license ?? '').trim();
+  if (typeof req.body === 'string') {
+    try { return String(JSON.parse(req.body).license ?? '').trim(); }
+    catch { return ''; }
+  }
+  return '';
+}
+
 module.exports = async function licenseVerify(context, req) {
   const headers = { 'Cache-Control': 'no-store', 'Content-Type': 'application/json; charset=utf-8', 'X-RateLimit-Limit': String(MAX_REQUESTS) };
   let limit;
@@ -132,7 +146,7 @@ module.exports = async function licenseVerify(context, req) {
   const rateHeaders = { ...headers, 'X-RateLimit-Remaining': String(limit.remaining) };
   if (!limit.allowed) return { status: 429, headers: { ...rateHeaders, 'Retry-After': String(limit.retryAfter) }, body: { valid: false, reason: 'rate_limited', expires_at: null } };
 
-  const license = String(req.query?.license ?? '').trim();
+  const license = requestedLicense(req);
   if (!license || license.length > 2_048) return { status: 400, headers: rateHeaders, body: { valid: false, reason: 'invalid', expires_at: null } };
 
   try {
@@ -149,3 +163,4 @@ module.exports._createMemoryRateLimiterForTests = createMemoryRateLimiter;
 module.exports._setRateLimiterForTests = (limiter) => { rateLimiter = limiter; };
 module.exports._setTableClientForTests = (client) => { TableClient = client; };
 module.exports._AzureTableRateLimiterForTests = AzureTableRateLimiter;
+module.exports._requestedLicenseForTests = requestedLicense;

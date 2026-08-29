@@ -229,12 +229,16 @@ test("legacy poisoned rows are removed or stripped before the log renders", asyn
     ]);
 });
 
-test("returned licenses are stripped and verified through the same-origin gateway", async ({
+test("@claim:license-token-handling stores a returned token and posts it only to the same-origin license gateway", async ({
   page,
 }) => {
   let requestURL = "";
-  await page.route("**/api/license/verify?**", async (route) => {
+  let requestMethod = "";
+  let requestBody = "";
+  await page.route("**/api/license/verify", async (route) => {
     requestURL = route.request().url();
+    requestMethod = route.request().method();
+    requestBody = route.request().postData() || "";
     await route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -255,10 +259,11 @@ test("returned licenses are stripped and verified through the same-origin gatewa
       localStorage.getItem("sb_license:confidential-file-handoff"),
     ),
   ).toBe("returned-test-token");
-  expect(requestURL).toContain(
-    "/api/license/verify?license=returned-test-token",
-  );
+  expect(new URL(requestURL).pathname).toBe("/api/license/verify");
+  expect(new URL(requestURL).search).toBe("");
   expect(new URL(requestURL).origin).toBe("http://127.0.0.1:4173");
+  expect(requestMethod).toBe("POST");
+  expect(JSON.parse(requestBody)).toEqual({ license: "returned-test-token" });
   await expect(page.locator("#custom-note")).toBeDisabled();
 });
 
@@ -522,7 +527,7 @@ test("@claim:local-log-export demo exports only checklist fields", async ({
 test("@claim:license-cache-ttl a verdict is reused below 24 hours and refreshed at the boundary", async ({
   page,
 }) => {
-  await page.route("**/api/license/verify?**", async (route) =>
+  await page.route("**/api/license/verify", async (route) =>
     route.fulfill({
       status: 503,
       contentType: "application/json",
@@ -575,7 +580,7 @@ test("@claim:license-cache-ttl a verdict is reused below 24 hours and refreshed 
 test("@claim:pro-note-entitlement only a verified token adds a personal note to the handoff sheet", async ({
   page,
 }) => {
-  await page.route("**/api/license/verify?**", async (route) => {
+  await page.route("**/api/license/verify", async (route) => {
     await route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -690,6 +695,69 @@ test("@claim:local-log-import an exported handoff log imports into a clean demo 
   await expect(page.locator("#record-list")).toContainText("Maya");
 });
 
+test("@claim:local-log-delete deletes a handoff-log entry after reload", async ({
+  page,
+}) => {
+  await page.goto("/?demo=1");
+  await page.locator("#create-demo").click();
+  await expect(page.locator("#record-list")).toContainText("Maya");
+  await page.reload();
+  page.once("dialog", (dialog) => dialog.accept());
+  await page.getByRole("button", { name: "Delete log entry" }).click();
+  await expect(page.locator("#record-list")).toContainText(
+    "No handoffs logged yet",
+  );
+  const records = await page.evaluate(
+    async () =>
+      new Promise<unknown[]>((resolve, reject) => {
+        const request = indexedDB.open("demo:confidential-file-handoff", 1);
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+          const all = request.result
+            .transaction("handoffs")
+            .objectStore("handoffs")
+            .getAll();
+          all.onsuccess = () => resolve(all.result);
+          all.onerror = () => reject(all.error);
+        };
+      }),
+  );
+  expect(records).toEqual([]);
+});
+
+test("@claim:site-storage-clear clearing browser site data removes records and license state", async ({
+  browser,
+}) => {
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  await page.route("**/api/license/verify", (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ valid: true, reason: "ok", expires_at: null }),
+    }),
+  );
+  await page.goto("/?license=stored-license-token");
+  await expect(page.locator("#license-status")).toContainText("unlocked");
+  await preparePacket(page);
+  await page.goto("/?demo=1");
+  await page.locator("#create-demo").click();
+  expect(
+    (await page.evaluate(() => indexedDB.databases())).map(({ name }) => name).sort(),
+  ).toEqual(["confidential-file-handoff", "demo:confidential-file-handoff"]);
+  expect(
+    await page.evaluate(() => localStorage.getItem("sb_license_verdict:confidential-file-handoff")),
+  ).not.toBeNull();
+  const cdp = await context.newCDPSession(page);
+  await cdp.send("Storage.clearDataForOrigin", {
+    origin: "http://127.0.0.1:4173",
+    storageTypes: "all",
+  });
+  expect(await page.evaluate(() => Object.keys(localStorage))).toEqual([]);
+  expect(await page.evaluate(() => indexedDB.databases())).toEqual([]);
+  await context.close();
+});
+
 test("@claim:no-sensitive-uploads the complete demo flow makes no off-origin request", async ({
   page,
 }) => {
@@ -768,7 +836,7 @@ test("@claim:payment-provider-boundary payment stays on the hosted Sociobot chec
 test("@claim:revoked-license-lock a revoked license turns off the personal-note field", async ({
   page,
 }) => {
-  await page.route("**/api/license/verify?**", (route) =>
+  await page.route("**/api/license/verify", (route) =>
     route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -814,6 +882,20 @@ test("@claim:artwork-provenance the shipped artwork has its original prompt reco
   expect(preview.readUInt32BE(20)).toBe(630);
 });
 
+test("landing first screen shows the action and all three facts at 1366 by 768", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({ viewport: { width: 1366, height: 768 } });
+  const page = await context.newPage();
+  await page.goto("/");
+  for (const selector of ["#page-title", ".lede", ".hero-actions", ".hero-facts"]) {
+    const box = await page.locator(selector).boundingBox();
+    expect(box, selector).not.toBeNull();
+    expect(box!.y + box!.height, selector).toBeLessThanOrEqual(768);
+  }
+  await context.close();
+});
+
 test("routes have exact titles, complete metadata, a shared shell, and a real 404", async ({
   page,
 }) => {
@@ -823,6 +905,7 @@ test("routes have exact titles, complete metadata, a shared shell, and a real 40
     ["/?demo=1", "Demo — Confidential File Handoff"],
     ["/privacy/", "Privacy — Confidential File Handoff"],
     ["/terms/", "Terms — Confidential File Handoff"],
+    ["/offline.html", "Offline — Confidential File Handoff"],
   ] as const;
   for (const [route, title] of routes) {
     await page.goto(route);
@@ -844,10 +927,13 @@ test("routes have exact titles, complete metadata, a shared shell, and a real 40
       "summary_large_image",
     );
     await expect(page.locator('link[rel="icon"]')).toHaveCount(1);
+    await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveCount(1);
+    await expect(page.locator('link[rel="manifest"]')).toHaveCount(1);
     await expect(page.locator("header .brand")).toContainText("Confidential");
     await expect(page.locator("footer")).toContainText(
       "Built by Param Factory",
     );
+    await expect(page.locator("footer")).toContainText(/build [a-f0-9]{7}/);
     expect(await page.locator("header nav a").allTextContents()).toEqual(
       expectedNavigation,
     );
@@ -857,6 +943,7 @@ test("routes have exact titles, complete metadata, a shared shell, and a real 40
   await expect(page).toHaveTitle("Page not found — Confidential File Handoff");
   await expect(page.locator("header .brand")).toBeVisible();
   await expect(page.locator("footer")).toBeVisible();
+  await expect(page.locator("footer")).toContainText(/build [a-f0-9]{7}/);
   expect(await page.locator("header nav a").allTextContents()).toEqual(
     expectedNavigation,
   );
@@ -892,6 +979,12 @@ test("internal navigation and browser Back move focus to and announce the route 
   await expect(page.locator("#route-status")).toHaveText(
     "Confidential File Handoff — create a protected ZIP",
   );
+  await page.goto("/offline.html");
+  await page.getByRole("link", { name: "Privacy" }).first().click();
+  await expect(page.getByRole("heading", { level: 1 })).toBeFocused();
+  await expect(page.locator("#route-status")).toHaveText(
+    "Privacy — Confidential File Handoff",
+  );
 });
 
 test("shared route headers keep the same order without mobile overflow", async ({
@@ -902,7 +995,7 @@ test("shared route headers keep the same order without mobile overflow", async (
   });
   const page = await context.newPage();
   const expectedNavigation = ["Demo", "How it works", "Handoff log", "Privacy"];
-  for (const route of ["/", "/?demo=1", "/privacy/", "/terms/", "/404.html"]) {
+  for (const route of ["/", "/?demo=1", "/privacy/", "/terms/", "/offline.html", "/404.html"]) {
     await page.goto(route);
     expect(await page.locator("header nav a").allTextContents()).toEqual(
       expectedNavigation,
@@ -920,7 +1013,7 @@ test("shared route headers keep the same order without mobile overflow", async (
 test("legal and not-found routes have no serious accessibility violations", async ({
   page,
 }) => {
-  for (const route of ["/privacy/", "/terms/", "/404.html"]) {
+  for (const route of ["/privacy/", "/terms/", "/offline.html", "/404.html"]) {
     await page.goto(route);
     await page.addScriptTag({ content: axe.source });
     const violations = await page.evaluate(async () =>
@@ -937,7 +1030,7 @@ test("legal and not-found routes have no serious accessibility violations", asyn
 });
 
 test("every non-download link resolves", async ({ page, request }) => {
-  const seeds = ["/", "/?demo=1", "/privacy/", "/terms/"];
+  const seeds = ["/", "/?demo=1", "/privacy/", "/terms/", "/offline.html", "/404.html"];
   const links = new Set<string>();
   for (const seed of seeds) {
     await page.goto(seed);

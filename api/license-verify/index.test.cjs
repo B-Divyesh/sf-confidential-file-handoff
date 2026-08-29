@@ -1,6 +1,7 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const { Buffer } = require("node:buffer");
 const { readFileSync } = require("node:fs");
 const { resolve } = require("node:path");
 const { afterEach, test } = require("node:test");
@@ -61,7 +62,7 @@ test("@claim:license-rate-limit allows 20 verification requests, then returns 42
   const context = { log: { warn() {} } };
   const req = {
     headers: { "x-forwarded-for": "203.0.113.8" },
-    query: { license: "invalid-test-token" },
+    body: { license: "invalid-test-token" },
   };
   const responses = [];
   for (let index = 0; index < 21; index += 1)
@@ -88,7 +89,7 @@ test("@claim:license-response-no-store license responses forbid caching", async 
     { log: { warn() {} } },
     {
       headers: { "user-agent": "qa-browser" },
-      query: { license: "valid-test-token" },
+      body: { license: "valid-test-token" },
     },
   );
   assert.equal(response.status, 200);
@@ -109,7 +110,7 @@ test("@claim:license-rate-storage-minimal the rate counter stores only a digest,
     { log: { warn() {} } },
     {
       headers: { "user-agent": "qa-browser", "accept-language": "en" },
-      query: { license: "must-not-be-stored" },
+      body: { license: "must-not-be-stored" },
     },
   );
   const [row] = [...table.rows.values()];
@@ -130,10 +131,16 @@ test("rejects a missing token without calling the upstream API", async () => {
   };
   const response = await verify(
     { log: { warn() {} } },
-    { headers: {}, query: {} },
+    { headers: {}, body: {} },
   );
   assert.equal(response.status, 400);
   assert.equal(called, false);
+});
+
+test("accepts parsed, string, and buffer JSON request bodies", () => {
+  assert.equal(verify._requestedLicenseForTests({ body: { license: " object-token " } }), "object-token");
+  assert.equal(verify._requestedLicenseForTests({ body: '{"license":"string-token"}' }), "string-token");
+  assert.equal(verify._requestedLicenseForTests({ body: Buffer.from('{"license":"buffer-token"}') }), "buffer-token");
 });
 
 test("uses a stable browser identity instead of a rotating edge address", async () => {
@@ -150,7 +157,7 @@ test("uses a stable browser identity instead of a rotating edge address", async 
       "user-agent": "qa-browser",
       "accept-language": "en",
     },
-    query: { license: "test-token-a" },
+    body: { license: "test-token-a" },
   });
   const second = await verify(context, {
     headers: {
@@ -158,7 +165,7 @@ test("uses a stable browser identity instead of a rotating edge address", async 
       "user-agent": "qa-browser",
       "accept-language": "en",
     },
-    query: { license: "test-token-b" },
+    body: { license: "test-token-b" },
   });
   assert.equal(first.headers["X-RateLimit-Remaining"], "19");
   assert.equal(second.headers["X-RateLimit-Remaining"], "18");
@@ -172,7 +179,7 @@ test("fails closed when durable rate-limit storage is unavailable", async () => 
   try {
     const response = await verify(
       { log: { warn() {} } },
-      { headers: {}, query: { license: "test-token" } },
+      { headers: {}, body: { license: "test-token" } },
     );
     assert.equal(response.status, 503);
     assert.equal(response.headers["Retry-After"], "60");
@@ -192,7 +199,7 @@ test("@regression:managed-function log functions do not turn an upstream outage 
   };
   const response = await verify(
     { log() {} },
-    { headers: {}, query: { license: "test-token" } },
+    { headers: {}, body: { license: "test-token" } },
   );
   assert.equal(response.status, 503);
   assert.equal(response.headers["Retry-After"], "60");
@@ -221,7 +228,7 @@ test("@regression:missing-optional-table-sdk still enforces 20 checks and return
           { log() {} },
           {
             headers: { "user-agent": "qa-browser" },
-            query: { license: "test-token" },
+            body: { license: "test-token" },
           },
         ),
       );

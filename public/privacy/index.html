@@ -81,7 +81,7 @@
       <h2>Your choices</h2>
       <p>
         You can export, import, or delete the handoff log. Clearing this site’s
-        browser storage removes it.
+        browser storage removes handoff records and saved license results.
       </p>
       <p>
         The demo uses a separate browser database. Reset demo clears that
@@ -89,8 +89,11 @@
       </p>
       <h2>Pro licenses</h2>
       <p>
-        A license token stays in this browser. A verified result is reused for
-        less than 24 hours.
+        A license token is stored in this browser. When the app checks it, it
+        sends the token to this site’s license gateway in a request body.
+      </p>
+      <p>
+        A verified result is reused for less than 24 hours.
       </p>
       <p>
         The license gateway keeps only an irreversible browser identifier, a
@@ -102,8 +105,8 @@
       </p>
       <h2>Contact</h2>
       <p>
-        Contact the operator through Sociobot for privacy questions. Do not send
-        files in support requests.
+        <a href="https://sociobot.in/support">Contact Sociobot support</a> for
+        privacy questions. Do not send files in support requests.
       </p>
     </main>
     <footer>
@@ -111,7 +114,7 @@
         Create protected ZIP handoffs on your device.
         <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a>
       </p>
-      <p>Built by Param Factory · version 1.0.0</p>
+      <p>Original AI-generated product artwork. Built by Param Factory · build __BUILD_ID__</p>
     </footer>
     <div id="route-status" class="sr-only" aria-live="polite"></div>
   </body>
