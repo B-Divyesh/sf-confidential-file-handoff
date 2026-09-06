@@ -103,6 +103,25 @@ test("prepared handoff keeps the sheet download action named and working", async
   );
 });
 
+test("prepared handoff remains readable in dark mode", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.goto("/?demo=1");
+  await page.locator("#create-demo").click();
+  await expect(page.locator("#kit")).toBeVisible();
+
+  await page.addScriptTag({ content: axe.source });
+  const violations = await page.evaluate(async () =>
+    (
+      await window.axe.run(document, {
+        runOnly: { type: "tag", values: ["wcag2a", "wcag2aa"] },
+      })
+    ).violations.filter(({ impact }) =>
+      ["serious", "critical"].includes(impact || ""),
+    ),
+  );
+  expect(violations).toEqual([]);
+});
+
 test("blocked IndexedDB does not block the prepared downloads", async ({
   browser,
 }) => {
