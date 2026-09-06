@@ -1,0 +1,14 @@
+{
+  "url": "https://confidential-file-handoff.sociobot.in/offline.html",
+  "loadMs": 607,
+  "errors": [],
+  "a11y": {
+    "title": "Offline — Confidential File Handoff",
+    "lang": "en",
+    "h1": 1,
+    "main": true,
+    "imgsMissingAlt": 0,
+    "buttonsUnlabeled": 0,
+    "textLength": 366
+  }
+}
