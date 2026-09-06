@@ -6,7 +6,7 @@
 
 The live phone audit also exposed a dark-theme result panel whose foreground inherited the dark page token. The panel now uses its fixed warm-paper foreground in both themes. A prepared-state axe regression covers this state.
 
-Implementation SHA: `7a64d762732df3d0523bbaac5f2325c29609789c` (label repair: `ab403c91bfd8aaae226423e5a173edcc2b451b32`). Deployment ID: `16c9a50d-e3ac-46f8-b801-646b64f74fb8`.
+Implementation SHA: `7a64d762732df3d0523bbaac5f2325c29609789c` (label repair: `ab403c91bfd8aaae226423e5a173edcc2b451b32`). Documentation/evidence SHA: `6e7c2038d80ed249d59eff63968fe32166be8396`. Deployment ID: `16c9a50d-e3ac-46f8-b801-646b64f74fb8`.
 
 ## Verification
 
