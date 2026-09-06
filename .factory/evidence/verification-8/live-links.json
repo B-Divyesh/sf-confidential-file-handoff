@@ -1,0 +1,77 @@
+[
+  {
+    "href": "https://confidential-file-handoff.sociobot.in/#main",
+    "status": 200,
+    "final": "https://confidential-file-handoff.sociobot.in/"
+  },
+  {
+    "href": "https://confidential-file-handoff.sociobot.in/",
+    "status": 200,
+    "final": "https://confidential-file-handoff.sociobot.in/"
+  },
+  {
+    "href": "https://confidential-file-handoff.sociobot.in/?demo=1",
+    "status": 200,
+    "final": "https://confidential-file-handoff.sociobot.in/?demo=1"
+  },
+  {
+    "href": "https://confidential-file-handoff.sociobot.in/#how-it-works",
+    "status": 200,
+    "final": "https://confidential-file-handoff.sociobot.in/"
+  },
+  {
+    "href": "https://confidential-file-handoff.sociobot.in/#records",
+    "status": 200,
+    "final": "https://confidential-file-handoff.sociobot.in/"
+  },
+  {
+    "href": "https://confidential-file-handoff.sociobot.in/privacy/",
+    "status": 200,
+    "final": "https://confidential-file-handoff.sociobot.in/privacy/"
+  },
+  {
+    "href": "https://confidential-file-handoff.sociobot.in/#builder",
+    "status": 200,
+    "final": "https://confidential-file-handoff.sociobot.in/"
+  },
+  {
+    "href": "https://api.sociobot.in/api/v1/products/confidential-file-handoff/checkout",
+    "status": 200,
+    "final": "https://checkout.dodopayments.com/session/cks_0NmzUvWpvXdMTueIxz5SA"
+  },
+  {
+    "href": "https://confidential-file-handoff.sociobot.in/terms/",
+    "status": 200,
+    "final": "https://confidential-file-handoff.sociobot.in/terms/"
+  },
+  {
+    "href": "https://confidential-file-handoff.sociobot.in/demo#main",
+    "status": 200,
+    "final": "https://confidential-file-handoff.sociobot.in/demo"
+  },
+  {
+    "href": "https://confidential-file-handoff.sociobot.in/privacy/#main",
+    "status": 200,
+    "final": "https://confidential-file-handoff.sociobot.in/privacy/"
+  },
+  {
+    "href": "https://sociobot.in/support",
+    "status": 200,
+    "final": "https://sociobot.in/support"
+  },
+  {
+    "href": "https://confidential-file-handoff.sociobot.in/terms/#main",
+    "status": 200,
+    "final": "https://confidential-file-handoff.sociobot.in/terms/"
+  },
+  {
+    "href": "https://confidential-file-handoff.sociobot.in/offline.html#main",
+    "status": 200,
+    "final": "https://confidential-file-handoff.sociobot.in/offline.html"
+  },
+  {
+    "href": "https://confidential-file-handoff.sociobot.in/qa-deliberate-missing-page#main",
+    "status": 404,
+    "final": "https://confidential-file-handoff.sociobot.in/qa-deliberate-missing-page"
+  }
+]

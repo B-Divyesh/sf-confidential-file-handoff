@@ -1,0 +1,23 @@
+{
+  "oldState": {
+    "controlled": true,
+    "cacheNames": [
+      "confidential-handoff-3a6d116e93ae64f8"
+    ],
+    "css": [
+      "http://127.0.0.1:4198/assets/main-C8a_O3F5.css"
+    ]
+  },
+  "toast": "A newer version is ready.\nLoad the new version",
+  "currentState": {
+    "controlled": true,
+    "cacheNames": [
+      "confidential-handoff-2babf44c6c853962"
+    ],
+    "css": [
+      "http://127.0.0.1:4198/assets/main-GUSyI-4G.css"
+    ],
+    "sheetButton": "Download handoff sheet"
+  },
+  "errors": []
+}

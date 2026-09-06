@@ -1,0 +1,224 @@
+{
+  "desktop": {
+    "firstScreen": {
+      "title": "Confidential File Handoff — create a protected ZIP",
+      "job": "Create a protected ZIP with opening instructions.",
+      "audience": "For people sending personal files to recipients who need clear, separate steps for opening them.",
+      "action": "Try it with sample data →",
+      "facts": [
+        "No file upload",
+        "Works offline after first visit",
+        "Core tools are free; Pro costs US $9 once"
+      ],
+      "actionBox": {
+        "top": 548,
+        "bottom": 598
+      },
+      "factsBox": {
+        "top": 672,
+        "bottom": 728
+      },
+      "viewport": 768
+    },
+    "invalid": {
+      "status": "Fix the marked fields before preparing the protected ZIP.",
+      "file": "Choose at least one file to continue.",
+      "recipient": "Add the recipient’s first name so their instructions are clear.",
+      "phrase": "Use at least 12 characters for the ZIP access phrase.",
+      "saved": "Confirm that you saved the access phrase first.",
+      "focused": "files"
+    },
+    "prepared": {
+      "downloadLabel": "Download handoff sheet",
+      "zipFilename": "confidential-file-handoff.zip",
+      "sheetFilename": "confidential-file-handoff.txt",
+      "zip": {
+        "listed": [
+          {
+            "name": "scan.pdf",
+            "encrypted": true,
+            "aesStrength": 3
+          },
+          {
+            "name": "scan (2).pdf",
+            "encrypted": true,
+            "aesStrength": 3
+          }
+        ],
+        "decrypted": [
+          0,
+          1048576
+        ],
+        "wrongPhraseRejected": true
+      },
+      "sheetChecks": {
+        "zipName": true,
+        "delivery": true,
+        "phraseRoute": true,
+        "compatibility": true,
+        "excludesPhrase": true,
+        "excludesSourceName": true
+      }
+    },
+    "persisted": "Sent Sep 6, 2026\nOpened Sep 6, 2026",
+    "recovery": {
+      "status": "That file is not a valid handoff-log export. No entries were imported.",
+      "rows": 1
+    },
+    "sameOriginCore": true,
+    "errors": []
+  },
+  "phone": {
+    "phoneFirstScreen": {
+      "h1": "Create a protected ZIP with opening instructions.",
+      "actionBottom": 514,
+      "factsBottom": 678,
+      "viewport": 844,
+      "overflow": 0
+    },
+    "firstTab": {
+      "text": "Skip to protected ZIP builder",
+      "className": "skip-link"
+    },
+    "skipOutline": "rgb(255, 208, 115) solid 3px",
+    "realRowsBeforeDemo": 1,
+    "demoInitial": {
+      "url": "https://confidential-file-handoff.sociobot.in/?demo=1",
+      "title": "Demo — Confidential File Handoff",
+      "banner": "Demo — sample data, nothing is saved.This demo uses a separate browser space.Reset demoStart for real",
+      "h1": "Create Maya’s sample handoff.",
+      "files": [
+        "project-update.txt",
+        "meeting-notes.txt"
+      ],
+      "createBottom": 733,
+      "viewport": 844
+    },
+    "prepared": {
+      "label": "Download handoff sheet",
+      "foreground": "rgb(248, 241, 226)",
+      "background": "rgb(13, 22, 25)",
+      "bannerVisible": true
+    },
+    "afterReset": {
+      "kitVisible": false,
+      "recordRows": 0,
+      "sampleFiles": [
+        "project-update.txt",
+        "meeting-notes.txt"
+      ]
+    },
+    "realRowsAfterDemo": 1,
+    "demoRowsAfterExit": 0,
+    "axeResult": {
+      "violations": [],
+      "seriousCritical": []
+    },
+    "motion": {
+      "reduced": true,
+      "scrollBehavior": "auto",
+      "buttonTransition": "0s"
+    },
+    "controlled": true,
+    "offlinePrepared": true,
+    "errors": []
+  },
+  "routes": {
+    "/": {
+      "status": 200,
+      "title": "Confidential File Handoff — create a protected ZIP",
+      "h1": [
+        "Create a protected ZIP with opening instructions."
+      ],
+      "main": 1,
+      "nav": [
+        "Demo",
+        "How it works",
+        "Handoff log",
+        "Privacy"
+      ],
+      "footer": 1,
+      "overflow": 0
+    },
+    "/demo": {
+      "status": 200,
+      "title": "Demo — Confidential File Handoff",
+      "h1": [
+        "Create Maya’s sample handoff."
+      ],
+      "main": 1,
+      "nav": [
+        "Demo",
+        "How it works",
+        "Handoff log",
+        "Privacy"
+      ],
+      "footer": 1,
+      "overflow": 0
+    },
+    "/privacy/": {
+      "status": 200,
+      "title": "Privacy — Confidential File Handoff",
+      "h1": [
+        "Privacy"
+      ],
+      "main": 1,
+      "nav": [
+        "Demo",
+        "How it works",
+        "Handoff log",
+        "Privacy"
+      ],
+      "footer": 1,
+      "overflow": 0
+    },
+    "/terms/": {
+      "status": 200,
+      "title": "Terms — Confidential File Handoff",
+      "h1": [
+        "Terms"
+      ],
+      "main": 1,
+      "nav": [
+        "Demo",
+        "How it works",
+        "Handoff log",
+        "Privacy"
+      ],
+      "footer": 1,
+      "overflow": 0
+    },
+    "/offline.html": {
+      "status": 200,
+      "title": "Offline — Confidential File Handoff",
+      "h1": [
+        "You’re offline."
+      ],
+      "main": 1,
+      "nav": [
+        "Demo",
+        "How it works",
+        "Handoff log",
+        "Privacy"
+      ],
+      "footer": 1,
+      "overflow": 0
+    },
+    "/qa-deliberate-missing-page": {
+      "status": 404,
+      "title": "Page not found — Confidential File Handoff",
+      "h1": [
+        "That page is not here."
+      ],
+      "main": 1,
+      "nav": [
+        "Demo",
+        "How it works",
+        "Handoff log",
+        "Privacy"
+      ],
+      "footer": 1,
+      "overflow": 0
+    }
+  }
+}

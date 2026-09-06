@@ -1,0 +1,191 @@
+[
+  {
+    "request": 1,
+    "status": 200,
+    "limit": "20",
+    "remaining": "19",
+    "retryAfter": null,
+    "cacheControl": "no-store",
+    "reason": "invalid"
+  },
+  {
+    "request": 2,
+    "status": 200,
+    "limit": "20",
+    "remaining": "18",
+    "retryAfter": null,
+    "cacheControl": "no-store",
+    "reason": "invalid"
+  },
+  {
+    "request": 3,
+    "status": 200,
+    "limit": "20",
+    "remaining": "17",
+    "retryAfter": null,
+    "cacheControl": "no-store",
+    "reason": "invalid"
+  },
+  {
+    "request": 4,
+    "status": 200,
+    "limit": "20",
+    "remaining": "16",
+    "retryAfter": null,
+    "cacheControl": "no-store",
+    "reason": "invalid"
+  },
+  {
+    "request": 5,
+    "status": 200,
+    "limit": "20",
+    "remaining": "15",
+    "retryAfter": null,
+    "cacheControl": "no-store",
+    "reason": "invalid"
+  },
+  {
+    "request": 6,
+    "status": 200,
+    "limit": "20",
+    "remaining": "14",
+    "retryAfter": null,
+    "cacheControl": "no-store",
+    "reason": "invalid"
+  },
+  {
+    "request": 7,
+    "status": 200,
+    "limit": "20",
+    "remaining": "13",
+    "retryAfter": null,
+    "cacheControl": "no-store",
+    "reason": "invalid"
+  },
+  {
+    "request": 8,
+    "status": 200,
+    "limit": "20",
+    "remaining": "12",
+    "retryAfter": null,
+    "cacheControl": "no-store",
+    "reason": "invalid"
+  },
+  {
+    "request": 9,
+    "status": 200,
+    "limit": "20",
+    "remaining": "11",
+    "retryAfter": null,
+    "cacheControl": "no-store",
+    "reason": "invalid"
+  },
+  {
+    "request": 10,
+    "status": 200,
+    "limit": "20",
+    "remaining": "10",
+    "retryAfter": null,
+    "cacheControl": "no-store",
+    "reason": "invalid"
+  },
+  {
+    "request": 11,
+    "status": 200,
+    "limit": "20",
+    "remaining": "9",
+    "retryAfter": null,
+    "cacheControl": "no-store",
+    "reason": "invalid"
+  },
+  {
+    "request": 12,
+    "status": 200,
+    "limit": "20",
+    "remaining": "8",
+    "retryAfter": null,
+    "cacheControl": "no-store",
+    "reason": "invalid"
+  },
+  {
+    "request": 13,
+    "status": 200,
+    "limit": "20",
+    "remaining": "7",
+    "retryAfter": null,
+    "cacheControl": "no-store",
+    "reason": "invalid"
+  },
+  {
+    "request": 14,
+    "status": 200,
+    "limit": "20",
+    "remaining": "6",
+    "retryAfter": null,
+    "cacheControl": "no-store",
+    "reason": "invalid"
+  },
+  {
+    "request": 15,
+    "status": 200,
+    "limit": "20",
+    "remaining": "5",
+    "retryAfter": null,
+    "cacheControl": "no-store",
+    "reason": "invalid"
+  },
+  {
+    "request": 16,
+    "status": 200,
+    "limit": "20",
+    "remaining": "4",
+    "retryAfter": null,
+    "cacheControl": "no-store",
+    "reason": "invalid"
+  },
+  {
+    "request": 17,
+    "status": 200,
+    "limit": "20",
+    "remaining": "3",
+    "retryAfter": null,
+    "cacheControl": "no-store",
+    "reason": "invalid"
+  },
+  {
+    "request": 18,
+    "status": 200,
+    "limit": "20",
+    "remaining": "2",
+    "retryAfter": null,
+    "cacheControl": "no-store",
+    "reason": "invalid"
+  },
+  {
+    "request": 19,
+    "status": 200,
+    "limit": "20",
+    "remaining": "1",
+    "retryAfter": null,
+    "cacheControl": "no-store",
+    "reason": "invalid"
+  },
+  {
+    "request": 20,
+    "status": 200,
+    "limit": "20",
+    "remaining": "0",
+    "retryAfter": null,
+    "cacheControl": "no-store",
+    "reason": "invalid"
+  },
+  {
+    "request": 21,
+    "status": 429,
+    "limit": "20",
+    "remaining": "0",
+    "retryAfter": "58",
+    "cacheControl": "no-store",
+    "reason": "rate_limited"
+  }
+]
