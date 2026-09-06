@@ -1,0 +1,3 @@
+Fresh browser profile: CFH-Repair-6-Live-Allowance-20260906
+Requests 1-20: HTTP 200; X-RateLimit-Remaining counted from 19 to 0
+Request 21: HTTP 429; X-RateLimit-Remaining: 0; Retry-After: 54

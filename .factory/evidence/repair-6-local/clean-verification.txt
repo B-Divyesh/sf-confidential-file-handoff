@@ -1,0 +1,10 @@
+Implementation: 7a64d762732df3d0523bbaac5f2325c29609789c
+Setup: detached git worktree; npm ci
+Declared claims: 28/28 passed independently using every exact command in .factory/claims.json
+npm test: PASS (4 Vitest tests; 10 gateway tests)
+npm run lint: PASS
+npm run typecheck: PASS
+npm run build: PASS; dist/index.html produced
+npm run test:browser: PASS (41/41 Chromium tests)
+JavaScript: 171688 bytes, 71.28 kB gzip
+CSS: 15180 bytes, 4.26 kB gzip

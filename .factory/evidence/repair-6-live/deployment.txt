@@ -1,0 +1,10 @@
+Implementation SHA: 7a64d762732df3d0523bbaac5f2325c29609789c
+Deployment ID: 16c9a50d-e3ac-46f8-b801-646b64f74fb8
+URL: https://confidential-file-handoff.sociobot.in/
+Deployment result: Succeeded
+HTTPS result: 200
+Root SHA-256: 7d233462975197e589224cc6d4860958cca536651cf448106bd27dc8f44b0da0
+JavaScript SHA-256: ceea84e9e9d28febd9eaae6e27ae1e36b30c7b94bf86597bc17047abb7b6eb60
+CSS SHA-256: b246407bcc466143fdae05a0f89a418c85a43f6b23b8b3f0f08dba90054c2468
+Service worker SHA-256: 44ba59b3106987c63631013433af1a3544e2d40bd0a3fbdf38deceba46c72bdb
+All four hashes matched the local production build.

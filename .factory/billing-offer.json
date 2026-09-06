@@ -1,0 +1,13 @@
+{
+  "slug": "confidential-file-handoff",
+  "name": "Confidential File Handoff Pro",
+  "price_minor": 900,
+  "currency": "USD",
+  "price_type": "one_time_price",
+  "return_url": "https://confidential-file-handoff.sociobot.in/",
+  "price_evidence": "The live Pro section and terms state: Pro costs US $9 once.",
+  "paid_features": [
+    "Add a short personal note to the downloaded handoff sheet"
+  ],
+  "license_validation_path": "https://confidential-file-handoff.sociobot.in/api/license/verify"
+}

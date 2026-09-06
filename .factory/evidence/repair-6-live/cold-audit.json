@@ -1,0 +1,40 @@
+{
+  "desktop": {
+    "viewport": "1366x768",
+    "job": "Create a protected ZIP with opening instructions.",
+    "audience": "For people sending personal files to recipients who need clear, separate steps for opening them.",
+    "first_action": "Try it with sample data",
+    "facts_bottom_px": 728.05,
+    "download_action": "Download handoff sheet",
+    "download_filename": "confidential-file-handoff.txt",
+    "recipient_sentence": "Send or print this with the ZIP. It tells Maya where to expect the access phrase.",
+    "demo_records_after_reset": 0,
+    "real_records_after_reset": ["Real recipient"],
+    "off_origin_requests": [],
+    "console_errors": []
+  },
+  "phone": {
+    "viewport": "390x844",
+    "color_scheme": "dark",
+    "reduced_motion": true,
+    "job_audience_action_and_facts_visible": true,
+    "download_action": "Download handoff sheet",
+    "recipient_sentence": "Send or print this with the ZIP. It tells Maya where to expect the access phrase.",
+    "prepared_foreground": "rgb(248, 241, 226)",
+    "prepared_background": "rgb(13, 22, 25)",
+    "serious_or_critical_axe_findings": [],
+    "console_errors": []
+  },
+  "invalid_boundary_recovery": {
+    "empty_status": "Fix the marked fields before preparing the protected ZIP.",
+    "empty_focus": "files",
+    "duplicate_names_and_empty_file_with_12_character_phrase": "PASS",
+    "download_filename": "confidential-file-handoff.zip",
+    "sent_state_persisted_after_reload": true
+  },
+  "offline": {
+    "service_worker_controlled": true,
+    "demo_created_offline": true,
+    "download_action": "Download handoff sheet"
+  }
+}
