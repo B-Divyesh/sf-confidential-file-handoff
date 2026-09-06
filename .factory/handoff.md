@@ -1,17 +1,16 @@
-# Review 4 handoff — Confidential File Handoff
+# Review 5 handoff — Confidential File Handoff
 
 ## Outcome
 
-Completed the requested adversarial first-read review without modifying product code. Review verdict: **PASS**. The detailed record is in `.factory/review-4.md`.
+Completed the requested independent re-review without modifying product code. Verdict: **FAIL**. The detailed record is in `.factory/review-5.md`.
 
 ## Verification
 
-- Used fresh live browser contexts at 390 × 844 and 1366 × 768; the first screen explains the job, audience, and first click without scrolling.
-- Entered the one-click demo. It immediately shows the populated Maya handoff, banner, reset, real-mode exit, and isolated storage behavior.
-- Created a clean clone at `/tmp/confidential-file-handoff-review4.59VcdU`, installed with `npm ci`, and ran all 28 commands listed in `.factory/claims.json` independently. All passed. Each claim has exactly one tag.
-- Checked live requests, route metadata, keyboard focus/announcements, real 404 behavior, internal/external links, sitemap/robots, shared shell, and current visual identity.
-- Ran `npm test`, `npm run lint`, `npm run typecheck`, `npm run build`, and `npm run test:browser` in the current checkout. All passed; browser tests: 39/39. `dist/index.html` was produced.
+- Fresh live desktop (1366 × 768) and phone (390 × 844) contexts established the job, audience, and first action before scrolling.
+- The one-click Maya demo, reset, real-mode exit, normal/invalid/boundary/recovery paths, offline reload, legal/404 routes, links, focus, reduced motion, privacy traffic, PWA behavior, and live API rate limit were checked.
+- A fresh clone installed with `npm ci`; all 28 exact commands in `.factory/claims.json` passed independently. `npm test`, lint, typecheck, build, and the 39-test browser suite also passed.
+- The live root and JavaScript asset byte-match the build at documentation SHA `02c47c6`; the last implementation SHA is `479e2c6`.
 
-## Known gaps and next steps
+## Known gap and next step
 
-None identified. The worktree contains only the review and this handoff update; product code was not changed.
+After a packet is prepared, the live `#download-sheet` button is overwritten with the sentence fragment “where to expect the access phrase.” It still downloads the sheet, but it does not name its action for visual or assistive-technology users. Repair this DOM mutation, add a post-create accessible-name regression test, deploy, and re-run the review. Product code was not changed in this review.
