@@ -83,6 +83,26 @@ test("print contains the recipient sheet instead of a blank page", async ({
   await popup.close();
 });
 
+test("prepared handoff keeps the sheet download action named and working", async ({
+  page,
+}) => {
+  await page.goto("/?demo=1");
+  await page.locator("#create-demo").click();
+
+  const sheetButton = page.locator("#download-sheet");
+  await expect(sheetButton).toBeVisible();
+  await expect(sheetButton).toHaveAccessibleName("Download handoff sheet");
+  await expect(page.locator("#kit")).toContainText(
+    "It tells Maya where to expect the access phrase.",
+  );
+
+  const downloadPromise = page.waitForEvent("download");
+  await sheetButton.click();
+  expect((await downloadPromise).suggestedFilename()).toBe(
+    "confidential-file-handoff.txt",
+  );
+});
+
 test("blocked IndexedDB does not block the prepared downloads", async ({
   browser,
 }) => {
